@@ -3,11 +3,6 @@ import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('refresh_tokens')
 export class RefreshTokenEntity {
-  constructor(userId: number, refreshToken: string) {
-    this.userId = userId;
-    this.refreshToken = refreshToken;
-  }
-
   @PrimaryGeneratedColumn()
   readonly id: number;
 
@@ -19,4 +14,9 @@ export class RefreshTokenEntity {
 
   @Column({ type: 'text' })
   refreshToken: string;
+
+  constructor(userId: number, refreshToken: string) {
+    this.userId = userId;
+    this.refreshToken = refreshToken;
+  }
 }
