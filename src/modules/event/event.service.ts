@@ -44,6 +44,13 @@ export class EventService {
     this.eventRepository.update({ id: event.id }, newEvent);
   }
 
+  async delete(eventId: number, userId: number): Promise<void> {
+    const event = await this.findOne(eventId);
+    this.checkAccess(event, userId);
+
+    await this.eventRepository.delete({ id: eventId });
+  }
+
   checkAccess(event: EventEntity, userId: number): void {
     const isAllow = event.ownerId === userId;
 

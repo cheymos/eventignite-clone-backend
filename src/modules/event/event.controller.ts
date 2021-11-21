@@ -1,6 +1,8 @@
 import {
   Body,
-  Controller, Get,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -46,5 +48,13 @@ export class EventController {
     @User('id') userId: number,
   ): Promise<void> {
     await this.eventService.update(eventId, eventDto, userId);
+  }
+
+  @Delete(':id')
+  async deleteEvent(
+    @Param('id') eventId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.eventService.delete(eventId, userId);
   }
 }
