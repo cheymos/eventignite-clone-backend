@@ -32,6 +32,18 @@ export class EventService {
     return event;
   }
 
+  async update(
+    eventId: number,
+    { name, description }: EventDto,
+    userId: number,
+  ): Promise<void> {
+    const event = await this.findOne(eventId);
+    this.checkAccess(event, userId);
+
+    const newEvent = new EventEntity(name, description, userId);
+    this.eventRepository.update({ id: event.id }, newEvent);
+  }
+
   checkAccess(event: EventEntity, userId: number): void {
     const isAllow = event.ownerId === userId;
 

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller, Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  UseGuards
+} from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
@@ -27,5 +36,15 @@ export class EventController {
     @User('id') userId: number,
   ): Promise<EventEntity> {
     return this.eventService.getOne(eventId, userId);
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateEvent(
+    @Param('id') eventId: number,
+    @Body() eventDto: EventDto,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.eventService.update(eventId, eventDto, userId);
   }
 }
