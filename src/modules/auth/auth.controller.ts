@@ -5,12 +5,10 @@ import {
   HttpStatus,
   Post,
   Res,
-  UseGuards,
-  UsePipes
+  UseGuards
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Cookies } from '../../common/decorators/cookies.decorator';
-import { MainValidationPipe } from '../../common/pipes/main-validation.pipe';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login.dto';
 import { RegisterDto } from './dtos/register.dto';
@@ -22,14 +20,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @UsePipes(MainValidationPipe)
   async register(@Body() registerData: RegisterDto): Promise<void> {
     await this.authService.register(registerData);
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(MainValidationPipe)
   async login(
     @Body() loginData: LoginDto,
     @Res({ passthrough: true }) res: Response,
