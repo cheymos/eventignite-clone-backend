@@ -36,7 +36,7 @@ export class AuthController {
   ): Promise<LoginResponse> {
     const user = await this.authService.authenticateUser(loginData);
     const response = await this.authService.buildLoginResponse(user);
-    this.placeRefreshTokenInCookies(res, response.refreshToken);
+    this._placeRefreshTokenInCookies(res, response.refreshToken);
 
     return response;
   }
@@ -61,12 +61,12 @@ export class AuthController {
     const user = await this.authService.refresh(refreshToken);
 
     const response = await this.authService.buildLoginResponse(user);
-    this.placeRefreshTokenInCookies(res, response.refreshToken);
+    this._placeRefreshTokenInCookies(res, response.refreshToken);
 
     return response;
   }
 
-  private placeRefreshTokenInCookies(
+  private _placeRefreshTokenInCookies(
     res: Response<LoginResponse>,
     refreshToken: string,
   ): void {
