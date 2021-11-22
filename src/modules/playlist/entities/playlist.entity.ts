@@ -17,4 +17,10 @@ export class PlaylistEntity {
 
   @Column()
   ownerId: number;
+
+  constructor(name: string, description: string, ownerId: number) {
+    this.name = name;
+    this.description = description;
+    this.ownerId = ownerId;
+  }
 }
