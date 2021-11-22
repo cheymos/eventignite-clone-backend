@@ -36,6 +36,18 @@ export class PlaylistService {
     return playlist;
   }
 
+  async update(
+    playlistId: number,
+    { name, description }: PlaylistDto,
+    userId: number,
+  ): Promise<void> {
+    const playlist = await this.findOne(playlistId);
+    this.checkAccess(playlist, userId);
+
+    const newPlaylist = new PlaylistEntity(name, description, userId);
+    this.playlistRepositoty.update({ id: playlist.id }, newPlaylist);
+  }
+
   checkAccess(playlist: PlaylistEntity, userId: number): void {
     const isAllow = playlist.ownerId === userId;
 
