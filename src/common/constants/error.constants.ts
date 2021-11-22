@@ -6,6 +6,7 @@ export const PASSWORD_INVALID = 'Invalid password';
 
 /* Events  */
 export const NO_ACCESS_EVENT = 'No access to the event';
+export const EVENT_NOT_FOUND = 'Event was not found';
 
 /* Playlist  */
 export const PLAYLIST_NOT_FOUND = 'The playlist was not found';

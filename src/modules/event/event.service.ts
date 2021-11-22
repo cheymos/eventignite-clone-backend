@@ -5,6 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import {
+  EVENT_NOT_FOUND,
+  NO_ACCESS_EVENT
+} from '../../common/constants/error.constants';
 import { EventDto } from './dtos/event.dto';
 import { EventEntity } from './entities/event.entity';
 
@@ -54,13 +58,13 @@ export class EventService {
   checkAccess(event: EventEntity, userId: number): void {
     const isAllow = event.ownerId === userId;
 
-    if (!isAllow) throw new ForbiddenException();
+    if (!isAllow) throw new ForbiddenException(NO_ACCESS_EVENT);
   }
 
   async findOne(eventId: number): Promise<EventEntity> {
     const event = await this.eventRepository.findOne(eventId);
 
-    if (!event) throw new NotFoundException();
+    if (!event) throw new NotFoundException(EVENT_NOT_FOUND);
 
     return event;
   }
