@@ -38,5 +38,19 @@ export class ScreenEntity {
   owner: UserEntity;
 
   @Column()
-  ownerId: UserEntity;
+  ownerId: number;
+
+  constructor(
+    name: string,
+    description: string,
+    eventId: number,
+    playlistId: number,
+    ownerId: number,
+  ) {
+    this.name = name;
+    this.description = description;
+    this.eventId = eventId;
+    this.playlistId = playlistId;
+    this.ownerId = ownerId;
+  }
 }
