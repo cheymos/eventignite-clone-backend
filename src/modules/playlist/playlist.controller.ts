@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -47,5 +48,13 @@ export class PlaylistController {
     @User('id') userId: number,
   ): Promise<void> {
     await this.playlistService.update(playlistId, playlistDto, userId);
+  }
+
+  @Delete(':id')
+  async deletePlaylist(
+    @Param('id') playlistId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.playlistService.delete(playlistId, userId);
   }
 }

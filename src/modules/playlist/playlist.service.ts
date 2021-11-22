@@ -48,6 +48,13 @@ export class PlaylistService {
     this.playlistRepositoty.update({ id: playlist.id }, newPlaylist);
   }
 
+  async delete(playlistId: number, userId: number): Promise<void> {
+    const playlist = await this.findOne(playlistId);
+    this.checkAccess(playlist, userId);
+
+    await this.playlistRepositoty.delete({ id: playlistId });
+  }
+
   checkAccess(playlist: PlaylistEntity, userId: number): void {
     const isAllow = playlist.ownerId === userId;
 
