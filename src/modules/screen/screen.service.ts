@@ -63,6 +63,39 @@ export class ScreenService {
     return screen;
   }
 
+  async update(
+    screenId: number,
+    { name, description, eventId, playlistId }: ScreenDto,
+    userId: number,
+  ): Promise<void> {
+    try {
+      const screen = await this.findOne(screenId);
+      this.checkAccess(screen, userId);
+
+      const event = await this.eventService.findOne(eventId);
+      const playlist = await this.playlstService.findOne(playlistId, [
+        'screen',
+      ]);
+
+      if (playlist.screen && playlist.screen.id !== screenId)
+        throw new UnprocessableEntityException(PLAYLIST_IS_USED);
+
+      this.playlstService.checkAccess(playlist, userId);
+      this.eventService.checkAccess(event, userId);
+
+      const newScreen = new ScreenEntity(
+        name,
+        description,
+        eventId,
+        playlistId,
+        userId,
+      );
+      await this.screenRepository.update({ id: screenId }, newScreen);
+    } catch (err: any) {
+      throw new UnprocessableEntityException(err.message);
+    }
+  }
+
   checkAccess(screen: ScreenEntity, userId: number): void {
     const isAllow = screen.ownerId === userId;
 

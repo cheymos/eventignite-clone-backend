@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards
+} from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
@@ -27,5 +38,15 @@ export class ScreenController {
     @User('id') userId: number,
   ): Promise<ScreenEntity> {
     return this.screenService.getOne(screenId, userId);
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateScreen(
+    @Param('id', ParseIntPipe) screenId: number,
+    @Body() screenDto: ScreenDto,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.screenService.update(screenId, screenDto, userId);
   }
 }
