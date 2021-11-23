@@ -2,9 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards
 } from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
@@ -35,5 +38,15 @@ export class ContentController {
     @User('id') userId: number,
   ): Promise<ContentEntity> {
     return this.contentService.getOne(contentId, userId);
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateContent(
+    @Param('id', ParseIntPipe) contentId: number,
+    @Body() contentDto: ContentDto,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.contentService.update(contentId, contentDto, userId);
   }
 }

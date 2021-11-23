@@ -33,6 +33,18 @@ export class ContentService {
     return content;
   }
 
+  async update(
+    contentId: number,
+    { type, body }: ContentDto,
+    userId: number,
+  ): Promise<void> {
+    const content = await this.findOne(contentId);
+    this.checkAccess(content, userId);
+
+    const newContent = new ContentEntity(type, body, userId);
+    this.contentRepository.update({ id: content.id }, newContent);
+  }
+
   checkAccess(content: ContentEntity, userId: number): void {
     const isAllow = content.ownerId === userId;
 
