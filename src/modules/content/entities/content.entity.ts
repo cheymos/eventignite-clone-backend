@@ -24,4 +24,10 @@ export class ContentEntity {
 
   @Column()
   ownerId: number;
+
+  constructor(type: ContentType, body: string, ownerId: number) {
+    this.type = type;
+    this.body = body;
+    this.ownerId = ownerId;
+  }
 }
