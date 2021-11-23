@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -48,5 +49,13 @@ export class ContentController {
     @User('id') userId: number,
   ): Promise<void> {
     await this.contentService.update(contentId, contentDto, userId);
+  }
+
+  @Delete(':id')
+  async deleteContent(
+    @Param('id', ParseIntPipe) contentId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.contentService.delete(contentId, userId);
   }
 }

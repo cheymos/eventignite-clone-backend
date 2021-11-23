@@ -45,6 +45,13 @@ export class ContentService {
     this.contentRepository.update({ id: content.id }, newContent);
   }
 
+  async delete(contentId: number, userId: number): Promise<void> {
+    const content = await this.findOne(contentId);
+    this.checkAccess(content, userId);
+
+    await this.contentRepository.delete({ id: contentId });
+  }
+
   checkAccess(content: ContentEntity, userId: number): void {
     const isAllow = content.ownerId === userId;
 
