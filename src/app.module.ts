@@ -7,6 +7,7 @@ import { EventModule } from './modules/event/event.module';
 import { UserModule } from './modules/user/user.module';
 import { ScreenModule } from './modules/screen/screen.module';
 import { PlaylistModule } from './modules/playlist/playlist.module';
+import { ContentModule } from './modules/content/content.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PlaylistModule } from './modules/playlist/playlist.module';
     EventModule,
     ScreenModule,
     PlaylistModule,
+    ContentModule,
   ],
 })
 export class AppModule {}
