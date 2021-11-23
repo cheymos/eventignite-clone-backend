@@ -1,10 +1,15 @@
 import {
-  Injectable, UnprocessableEntityException
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  PLAYLIST_IS_USED
+  NO_ACCESS_SCREEN,
+  PLAYLIST_IS_USED,
+  SCREEN_NOT_FOUND
 } from '../../common/constants/error.constants';
 import { EventService } from '../event/event.service';
 import { PlaylistService } from '../playlist/playlist.service';
@@ -49,5 +54,26 @@ export class ScreenService {
     } catch (err: any) {
       throw new UnprocessableEntityException(err.message);
     }
+  }
+
+  async getOne(screenId: number, userId: number): Promise<ScreenEntity> {
+    const screen = await this.findOne(screenId);
+    this.checkAccess(screen, userId);
+
+    return screen;
+  }
+
+  checkAccess(screen: ScreenEntity, userId: number): void {
+    const isAllow = screen.ownerId === userId;
+
+    if (!isAllow) throw new ForbiddenException(NO_ACCESS_SCREEN);
+  }
+
+  async findOne(screenId: number): Promise<ScreenEntity> {
+    const screen = await this.screenRepository.findOne(screenId);
+
+    if (!screen) throw new NotFoundException(SCREEN_NOT_FOUND);
+
+    return screen;
   }
 }
