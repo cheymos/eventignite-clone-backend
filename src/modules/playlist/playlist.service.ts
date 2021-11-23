@@ -61,8 +61,13 @@ export class PlaylistService {
     if (!isAllow) throw new ForbiddenException(NO_ACCESS_PLAYLIST);
   }
 
-  async findOne(playlistId: number): Promise<PlaylistEntity> {
-    const playlist = await this.playlistRepositoty.findOne(playlistId);
+  async findOne(
+    playlistId: number,
+    relations?: [string],
+  ): Promise<PlaylistEntity> {
+    const playlist = await this.playlistRepositoty.findOne(playlistId, {
+      relations,
+    });
 
     if (!playlist) throw new NotFoundException(PLAYLIST_NOT_FOUND);
 
