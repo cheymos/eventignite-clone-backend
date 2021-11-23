@@ -17,6 +17,10 @@ export const NO_ACCESS_PLAYLIST = 'No access to the playlist';
 export const NO_ACCESS_SCREEN = 'No access to the screen';
 export const SCREEN_NOT_FOUND = 'The screen was not found';
 
+/* Content */
+export const NO_ACCESS_CONTENT = 'No access to the content';
+export const CONTENT_NOT_FOUND = 'The content was not found';
+
 /* Other */
 export const ACCESS_DENIED = 'Access denied';
-export const PLAYLIST_OR_EVENT_NOT_FOUND = 'Playlist or event not found'
+export const PLAYLIST_OR_EVENT_NOT_FOUND = 'Playlist or event not found';
