@@ -27,7 +27,7 @@ export class ScreenEntity {
   @Column()
   eventId: number;
 
-  @OneToOne(() => PlaylistEntity)
+  @OneToOne(() => PlaylistEntity, (playlistEntity) => playlistEntity.screen)
   @JoinColumn()
   playlist?: PlaylistEntity;
 

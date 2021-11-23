@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm';
+import { ScreenEntity } from '../../screen/entities/screen.entity';
 import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('playlists')
@@ -17,6 +24,9 @@ export class PlaylistEntity {
 
   @Column()
   ownerId: number;
+
+  @OneToOne(() => ScreenEntity, (screenEntity) => screenEntity.playlist)
+  screen?: ScreenEntity;
 
   constructor(name: string, description: string, ownerId: number) {
     this.name = name;
