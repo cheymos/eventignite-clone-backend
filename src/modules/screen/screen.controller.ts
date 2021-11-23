@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -48,5 +49,13 @@ export class ScreenController {
     @User('id') userId: number,
   ): Promise<void> {
     await this.screenService.update(screenId, screenDto, userId);
+  }
+
+  @Delete(':id')
+  async deleteScreen(
+    @Param('id', ParseIntPipe) screenId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.screenService.delete(screenId, userId);
   }
 }

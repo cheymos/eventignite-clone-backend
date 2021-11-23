@@ -96,6 +96,13 @@ export class ScreenService {
     }
   }
 
+  async delete(screenId: number, userId: number): Promise<void> {
+    const screen = await this.findOne(screenId);
+    this.checkAccess(screen, userId);
+
+    await this.screenRepository.delete({ id: screenId });
+  }
+
   checkAccess(screen: ScreenEntity, userId: number): void {
     const isAllow = screen.ownerId === userId;
 
