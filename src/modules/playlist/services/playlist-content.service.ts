@@ -1,6 +1,11 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PLAYLIST_CONTENT_NOT_FOUND } from '../../../common/constants/error.constants';
 import { PaginateResponse } from '../../../common/types/paginate-response.type';
 import { ContentService } from '../../content/content.service';
 import { PlaylistContentDto } from '../dtos/playlist-content.dto';
@@ -59,5 +64,34 @@ export class PlaylistContentService {
       .getManyAndCount();
 
     return { data, total };
+  }
+
+  async updateFullRelationship(
+    { contentId, pos, duration }: PlaylistContentDto,
+    playlistId: number,
+    playlistContentId: number,
+    userId: number,
+  ): Promise<void> {
+    const playlist = await this.playlistService.findOne(playlistId);
+    this.playlistService.checkAccess(playlist, userId);
+
+    const playlistContent = await this.playlistContentRepository.findOne(
+      playlistContentId,
+    );
+
+    if (!playlistContent)
+      throw new NotFoundException(PLAYLIST_CONTENT_NOT_FOUND);
+
+    const newPlaylistContent = new PlaylistContentEntity(
+      playlistId,
+      contentId,
+      pos,
+      duration,
+    );
+
+    await this.playlistContentRepository.update(
+      { id: playlistContent.id },
+      newPlaylistContent,
+    );
   }
 }

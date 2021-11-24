@@ -5,6 +5,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards
 } from '@nestjs/common';
 import {
@@ -68,6 +69,21 @@ export class PlaylistContentController {
   ): Promise<PaginateResponse<PlaylistContentEntity>> {
     return await this.playlistContentService.getPlaylistWithAllContents(
       playlistId,
+      userId,
+    );
+  }
+
+  @Put(':id')
+  async updatePlaylistContentRelationship(
+    @Body() playlistContentDto: PlaylistContentDto,
+    @Param('playlistId', ParseIntPipe) playlistId: number,
+    @Param('id', ParseIntPipe) playlistContentId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.playlistContentService.updateFullRelationship(
+      playlistContentDto,
+      playlistId,
+      playlistContentId,
       userId,
     );
   }

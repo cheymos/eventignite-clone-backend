@@ -12,6 +12,8 @@ export const EVENT_NOT_FOUND = 'Event was not found';
 export const PLAYLIST_NOT_FOUND = 'The playlist was not found';
 export const PLAYLIST_IS_USED = 'The playlist is used';
 export const NO_ACCESS_PLAYLIST = 'No access to the playlist';
+export const PLAYLIST_CONTENT_NOT_FOUND =
+  'Content not found in this playlist (relationship was not created)';
 
 /* Screen */
 export const NO_ACCESS_SCREEN = 'No access to the screen';
