@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
@@ -82,6 +85,20 @@ export class PlaylistContentController {
   ): Promise<void> {
     await this.playlistContentService.updateFullRelationship(
       playlistContentDto,
+      playlistId,
+      playlistContentId,
+      userId,
+    );
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteContentFromPlaylist(
+    @Param('playlistId', ParseIntPipe) playlistId: number,
+    @Param('id') playlistContentId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.playlistContentService.deleteContentFromPlaylist(
       playlistId,
       playlistContentId,
       userId,

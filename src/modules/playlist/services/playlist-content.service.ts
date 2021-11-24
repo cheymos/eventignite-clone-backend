@@ -94,4 +94,20 @@ export class PlaylistContentService {
       newPlaylistContent,
     );
   }
+
+  async deleteContentFromPlaylist(
+    playlistId: number,
+    playlistContentId: number,
+    userId: number,
+  ): Promise<void> {
+    const playlist = await this.playlistService.findOne(playlistId);
+    this.playlistService.checkAccess(playlist, userId);
+
+    const deleteResult = await this.playlistContentRepository.delete(
+      playlistContentId,
+    );
+
+    if (deleteResult?.affected === 0)
+      throw new NotFoundException(PLAYLIST_CONTENT_NOT_FOUND);
+  }
 }
