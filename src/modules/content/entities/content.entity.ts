@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 
@@ -10,18 +11,22 @@ export enum ContentType {
 
 @Entity('contents')
 export class ContentEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   readonly id: number;
 
+  @ApiProperty({ enum: ContentType, enumName: 'ContentType' })
   @Column({ type: 'enum', enum: ContentType })
   type: ContentType;
 
+  @ApiProperty()
   @Column('text')
   body: string;
 
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   owner?: UserEntity;
 
+  @ApiProperty()
   @Column()
   ownerId: number;
 

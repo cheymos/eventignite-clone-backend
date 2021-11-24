@@ -11,6 +11,12 @@ import {
   Put,
   UseGuards
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags
+} from '@nestjs/swagger';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
@@ -19,10 +25,19 @@ import { ContentDto } from './dtos/content.dto';
 import { ContentEntity } from './entities/content.entity';
 
 @Controller('contents')
+@ApiTags('Contents')
 @UseGuards(AuthGuard)
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
+  @ApiOperation({ summary: 'Create content' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 201,
+    type: CreatedResponse,
+    description: 'Successfully created',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Post()
   async createContent(
     @Body() contentDto: ContentDto,
@@ -33,6 +48,15 @@ export class ContentController {
     return { id };
   }
 
+  @ApiOperation({ summary: 'Get content by id' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    type: ContentEntity,
+    description: 'Successful operation',
+  })
+  @ApiResponse({ status: 403, description: 'Access denied' })
+  @ApiResponse({ status: 404, description: 'Content not found' })
   @Get(':id')
   async getContent(
     @Param('id', ParseIntPipe) contentId: number,
@@ -41,6 +65,11 @@ export class ContentController {
     return this.contentService.getOne(contentId, userId);
   }
 
+  @ApiOperation({ summary: 'Update content by id' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 204, description: 'Successfully updated' })
+  @ApiResponse({ status: 403, description: 'Access denied' })
+  @ApiResponse({ status: 404, description: 'Content not found' })
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateContent(
@@ -51,6 +80,11 @@ export class ContentController {
     await this.contentService.update(contentId, contentDto, userId);
   }
 
+  @ApiOperation({ summary: 'Delete content by id' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 204, description: 'Successfully deleted' })
+  @ApiResponse({ status: 403, description: 'Access denied' })
+  @ApiResponse({ status: 404, description: 'Content not found' })
   @Delete(':id')
   async deleteContent(
     @Param('id', ParseIntPipe) contentId: number,
