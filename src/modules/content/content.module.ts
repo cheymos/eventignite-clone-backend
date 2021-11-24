@@ -8,5 +8,6 @@ import { ContentEntity } from './entities/content.entity';
   imports: [TypeOrmModule.forFeature([ContentEntity])],
   controllers: [ContentController],
   providers: [ContentService],
+  exports: [ContentService],
 })
 export class ContentModule {}
