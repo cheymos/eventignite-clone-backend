@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -12,18 +13,22 @@ import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('screens')
 export class ScreenEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   readonly id: number;
 
+  @ApiProperty()
   @Column()
   name: string;
 
+  @ApiProperty()
   @Column({ nullable: true })
   description?: string;
 
   @ManyToOne(() => EventEntity, { onDelete: 'CASCADE' })
   event?: EventEntity;
 
+  @ApiProperty()
   @Column()
   eventId: number;
 
@@ -31,12 +36,14 @@ export class ScreenEntity {
   @JoinColumn()
   playlist?: PlaylistEntity;
 
+  @ApiProperty()
   @Column()
   playlistId: number;
 
   @ManyToOne(() => UserEntity)
   owner: UserEntity;
 
+  @ApiProperty()
   @Column()
   ownerId: number;
 
