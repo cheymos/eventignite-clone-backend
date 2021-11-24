@@ -16,12 +16,12 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
-import { CreatedResponse } from '../../common/types/created-response.type';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { User } from '../user/decorators/user.decorator';
-import { PlaylistDto } from './dtos/playlist.dto';
-import { PlaylistEntity } from './entities/playlist.entity';
-import { PlaylistService } from './playlist.service';
+import { CreatedResponse } from '../../../common/types/created-response.type';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { User } from '../../user/decorators/user.decorator';
+import { PlaylistDto } from '../dtos/playlist.dto';
+import { PlaylistEntity } from '../entities/playlist.entity';
+import { PlaylistService } from '../services/playlist.service';
 
 @Controller('playlists')
 @ApiTags('Playlists')

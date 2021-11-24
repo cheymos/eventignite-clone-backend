@@ -12,7 +12,7 @@ import {
   SCREEN_NOT_FOUND
 } from '../../common/constants/error.constants';
 import { EventService } from '../event/event.service';
-import { PlaylistService } from '../playlist/playlist.service';
+import { PlaylistService } from '../playlist/services/playlist.service';
 import { ScreenDto } from './dtos/screen.dto';
 import { ScreenEntity } from './entities/screen.entity';
 

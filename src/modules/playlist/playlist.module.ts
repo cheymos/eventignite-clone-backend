@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContentModule } from '../content/content.module';
 import { PlaylistContentEntity } from './entities/playlist-content.entity';
 import { PlaylistEntity } from './entities/playlist.entity';
-import { PlaylistContentController } from './playlist-content.controller';
-import { PlaylistContentService } from './playlist-content.service';
-import { PlaylistController } from './playlist.controller';
-import { PlaylistService } from './playlist.service';
+import { PlaylistContentController } from './controllers/playlist-content.controller';
+import { PlaylistContentService } from './services/playlist-content.service';
+import { PlaylistController } from './controllers/playlist.controller';
+import { PlaylistService } from './services/playlist.service';
 
 @Module({
   imports: [

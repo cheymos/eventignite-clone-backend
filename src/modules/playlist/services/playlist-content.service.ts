@@ -1,9 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ContentService } from '../content/content.service';
-import { PlaylistContentDto } from './dtos/playlist-content.dto';
-import { PlaylistContentEntity } from './entities/playlist-content.entity';
+import { ContentService } from '../../content/content.service';
+import { PlaylistContentDto } from '../dtos/playlist-content.dto';
+import { PlaylistContentEntity } from '../entities/playlist-content.entity';
 import { PlaylistService } from './playlist.service';
 
 @Injectable()

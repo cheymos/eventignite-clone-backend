@@ -6,11 +6,11 @@ import {
   Post,
   UseGuards
 } from '@nestjs/common';
-import { CreatedResponse } from '../../common/types/created-response.type';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { User } from '../user/decorators/user.decorator';
-import { PlaylistContentDto } from './dtos/playlist-content.dto';
-import { PlaylistContentService } from './playlist-content.service';
+import { CreatedResponse } from '../../../common/types/created-response.type';
+import { AuthGuard } from '../../auth/guards/auth.guard';
+import { User } from '../../user/decorators/user.decorator';
+import { PlaylistContentDto } from '../dtos/playlist-content.dto';
+import { PlaylistContentService } from '../services/playlist-content.service';
 
 @Controller('playlists/:playlistId/contents')
 @UseGuards(AuthGuard)

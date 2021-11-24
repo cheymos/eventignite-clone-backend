@@ -8,9 +8,9 @@ import { Repository } from 'typeorm';
 import {
   NO_ACCESS_PLAYLIST,
   PLAYLIST_NOT_FOUND
-} from '../../common/constants/error.constants';
-import { PlaylistDto } from './dtos/playlist.dto';
-import { PlaylistEntity } from './entities/playlist.entity';
+} from '../../../common/constants/error.constants';
+import { PlaylistDto } from '../dtos/playlist.dto';
+import { PlaylistEntity } from '../entities/playlist.entity';
 
 @Injectable()
 export class PlaylistService {
