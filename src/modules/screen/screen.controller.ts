@@ -59,7 +59,7 @@ export class ScreenController {
   @ApiResponse({ status: 404, description: 'Screen not found' })
   @Get(':id')
   async getScreen(
-    @Param('id') screenId: number,
+    @Param('id', ParseIntPipe) screenId: number,
     @User('id') userId: number,
   ): Promise<ScreenEntity> {
     return this.screenService.getOne(screenId, userId);

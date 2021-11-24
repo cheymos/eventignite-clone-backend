@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards
@@ -58,7 +59,7 @@ export class PlaylistController {
   @ApiResponse({ status: 404, description: 'Playlist not found' })
   @Get(':id')
   async getPlaylist(
-    @Param('id') playlistId: number,
+    @Param('id', ParseIntPipe) playlistId: number,
     @User('id') userId: number,
   ): Promise<PlaylistEntity> {
     return this.playlistService.getOne(playlistId, userId);
@@ -72,7 +73,7 @@ export class PlaylistController {
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePlaylist(
-    @Param('id') playlistId: number,
+    @Param('id', ParseIntPipe) playlistId: number,
     @Body() playlistDto: PlaylistDto,
     @User('id') userId: number,
   ): Promise<void> {
@@ -86,7 +87,7 @@ export class PlaylistController {
   @ApiResponse({ status: 404, description: 'Playlist not found' })
   @Delete(':id')
   async deletePlaylist(
-    @Param('id') playlistId: number,
+    @Param('id', ParseIntPipe) playlistId: number,
     @User('id') userId: number,
   ): Promise<void> {
     await this.playlistService.delete(playlistId, userId);

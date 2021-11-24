@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   UseGuards
@@ -58,7 +59,7 @@ export class EventController {
   @ApiResponse({ status: 404, description: 'Event not found' })
   @Get(':id')
   async getEvent(
-    @Param('id') eventId: number,
+    @Param('id', ParseIntPipe) eventId: number,
     @User('id') userId: number,
   ): Promise<EventEntity> {
     return this.eventService.getOne(eventId, userId);
@@ -72,7 +73,7 @@ export class EventController {
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateEvent(
-    @Param('id') eventId: number,
+    @Param('id', ParseIntPipe) eventId: number,
     @Body() eventDto: EventDto,
     @User('id') userId: number,
   ): Promise<void> {
@@ -86,7 +87,7 @@ export class EventController {
   @ApiResponse({ status: 404, description: 'Event not found' })
   @Delete(':id')
   async deleteEvent(
-    @Param('id') eventId: number,
+    @Param('id', ParseIntPipe) eventId: number,
     @User('id') userId: number,
   ): Promise<void> {
     await this.eventService.delete(eventId, userId);

@@ -106,7 +106,7 @@ export class PlaylistContentController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteContentFromPlaylist(
     @Param('playlistId', ParseIntPipe) playlistId: number,
-    @Param('id') playlistContentId: number,
+    @Param('id', ParseIntPipe) playlistContentId: number,
     @User('id') userId: number,
   ): Promise<void> {
     await this.playlistContentService.deleteContentFromPlaylist(
