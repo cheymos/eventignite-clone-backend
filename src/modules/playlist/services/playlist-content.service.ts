@@ -53,7 +53,7 @@ export class PlaylistContentService {
 
     const [data, total] = await this.playlistContentRepository
       .createQueryBuilder('pc')
-      .select(['pc.content', 'pc.pos', 'pc.duration'])
+      .select(['pc.id', 'pc.content', 'pc.pos', 'pc.duration'])
       .leftJoinAndSelect('pc.content', 'content')
       .where('pc.playlist = :id', { id: playlistId })
       .getManyAndCount();
