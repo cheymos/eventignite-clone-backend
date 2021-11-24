@@ -37,7 +37,6 @@ export class ScreenController {
     type: CreatedResponse,
     description: 'Successfully created',
   })
-  @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Post()
   async createScreen(
