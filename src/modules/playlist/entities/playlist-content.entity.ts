@@ -1,9 +1,11 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ContentEntity } from '../../content/entities/content.entity';
 import { PlaylistEntity } from './playlist.entity';
 
 @Entity('playlists_contents')
 export class PlaylistContentEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   readonly id: number;
 
@@ -13,15 +15,18 @@ export class PlaylistContentEntity {
   @Column()
   playlistId: number;
 
+  @ApiProperty()
   @ManyToOne(() => ContentEntity, { onDelete: 'CASCADE' })
   content?: ContentEntity;
 
   @Column()
   contentId: number;
 
+  @ApiProperty()
   @Column('smallint')
   pos: number;
 
+  @ApiProperty()
   @Column()
   duration: number;
 
