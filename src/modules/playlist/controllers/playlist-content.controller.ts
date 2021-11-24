@@ -76,7 +76,13 @@ export class PlaylistContentController {
     );
   }
 
+  @ApiOperation({ summary: 'Update playlist-content relationship by id' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 204, description: 'Successfully updated' })
+  @ApiResponse({ status: 403, description: 'Access denied' })
+  @ApiResponse({ status: 404, description: 'Playlist not found' })
   @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async updatePlaylistContentRelationship(
     @Body() playlistContentDto: PlaylistContentDto,
     @Param('playlistId', ParseIntPipe) playlistId: number,
@@ -91,6 +97,11 @@ export class PlaylistContentController {
     );
   }
 
+  @ApiOperation({ summary: 'Delete content from playlist by relationship id' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 204, description: 'Successfully deleted' })
+  @ApiResponse({ status: 403, description: 'Access denied' })
+  @ApiResponse({ status: 404, description: 'Playlist not found' })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteContentFromPlaylist(
