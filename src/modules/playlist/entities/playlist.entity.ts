@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -10,18 +11,22 @@ import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('playlists')
 export class PlaylistEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   readonly id: number;
 
+  @ApiProperty()
   @Column()
   name: string;
 
+  @ApiProperty()
   @Column({ nullable: true })
   description?: string;
 
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   owner?: UserEntity;
 
+  @ApiProperty()
   @Column()
   ownerId: number;
 
