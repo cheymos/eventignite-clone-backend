@@ -36,7 +36,6 @@ export class EventController {
     type: CreatedResponse,
     description: 'Successfully created',
   })
-  @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Post()
   async createEvent(
@@ -50,6 +49,11 @@ export class EventController {
 
   @ApiOperation({ summary: 'Get event by id' })
   @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    type: EventEntity,
+    description: 'Successful operation',
+  })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Event not found' })
   @Get(':id')
@@ -62,6 +66,7 @@ export class EventController {
 
   @ApiOperation({ summary: 'Update event by id' })
   @ApiBearerAuth()
+  @ApiResponse({ status: 204, description: 'Successfully updated' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Event not found' })
   @Put(':id')
@@ -76,6 +81,7 @@ export class EventController {
 
   @ApiOperation({ summary: 'Delete event by id' })
   @ApiBearerAuth()
+  @ApiResponse({ status: 204, description: 'Successfully deleted' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Event not found' })
   @Delete(':id')
