@@ -24,4 +24,16 @@ export class PlaylistContentEntity {
 
   @Column()
   duration: number;
+
+  constructor(
+    playlistId: number,
+    contentId: number,
+    pos: number,
+    duration: number,
+  ) {
+    this.playlistId = playlistId;
+    this.contentId = contentId;
+    this.pos = pos;
+    this.duration = duration;
+  }
 }
