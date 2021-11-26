@@ -43,9 +43,9 @@ export class EventController {
     @Body() eventDto: EventDto,
     @User('id') userId: number,
   ): Promise<CreatedResponse> {
-    const eventId = await this.eventService.create(eventDto, userId);
+    const id = await this.eventService.create(eventDto, userId);
 
-    return { id: eventId };
+    return { id };
   }
 
   @ApiOperation({ summary: 'Get event by id' })

@@ -43,9 +43,9 @@ export class PlaylistController {
     @Body() playlistDto: PlaylistDto,
     @User('id') userId: number,
   ): Promise<CreatedResponse> {
-    const playlistId = await this.playlistService.create(playlistDto, userId);
+    const id = await this.playlistService.create(playlistDto, userId);
 
-    return { id: playlistId };
+    return { id };
   }
 
   @ApiOperation({ summary: 'Get playlist by id' })
