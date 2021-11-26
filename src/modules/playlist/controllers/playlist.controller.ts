@@ -86,6 +86,7 @@ export class PlaylistController {
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Playlist not found' })
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deletePlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
     @User('id') userId: number,

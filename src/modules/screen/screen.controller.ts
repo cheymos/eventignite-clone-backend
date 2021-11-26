@@ -86,6 +86,7 @@ export class ScreenController {
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Screen not found' })
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteScreen(
     @Param('id', ParseIntPipe) screenId: number,
     @User('id') userId: number,

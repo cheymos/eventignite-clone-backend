@@ -86,6 +86,7 @@ export class EventController {
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Event not found' })
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteEvent(
     @Param('id', ParseIntPipe) eventId: number,
     @User('id') userId: number,

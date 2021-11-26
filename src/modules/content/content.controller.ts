@@ -86,6 +86,7 @@ export class ContentController {
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Content not found' })
   @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteContent(
     @Param('id', ParseIntPipe) contentId: number,
     @User('id') userId: number,
