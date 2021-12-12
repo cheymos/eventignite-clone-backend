@@ -19,10 +19,6 @@ export class ContentEntity {
   @Column({ type: 'enum', enum: ContentType })
   type: ContentType;
 
-  @ApiProperty()
-  @Column('text')
-  body: string;
-
   @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
   owner?: UserEntity;
 
@@ -30,9 +26,8 @@ export class ContentEntity {
   @Column()
   ownerId: number;
 
-  constructor(type: ContentType, body: string, ownerId: number) {
+  constructor(type: ContentType, ownerId: number) {
     this.type = type;
-    this.body = body;
     this.ownerId = ownerId;
   }
 }
