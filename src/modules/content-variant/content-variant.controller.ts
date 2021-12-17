@@ -2,9 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards
 } from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
@@ -54,5 +57,21 @@ export class ContentVariantController {
     @User('id') userId: number,
   ): Promise<PaginateResponse<ContentVariantEntity>> {
     return this.contentVariantService.getAllVariants(contentId, userId);
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateContentVariant(
+    @Body() contentVariantDto: ContentVariantDto,
+    @Param('id', ParseIntPipe) contentVariantId: number,
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.contentVariantService.update(
+      contentVariantDto,
+      contentVariantId,
+      contentId,
+      userId,
+    );
   }
 }
