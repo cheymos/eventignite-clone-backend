@@ -59,6 +59,27 @@ export class ContentVariantService {
     return { data, total };
   }
 
+  async update(
+    { body }: ContentVariantDto,
+    contentVariantId: number,
+    contentId: number,
+    userId: number,
+  ): Promise<void> {
+    const content = await this.contentService.findOne(contentId);
+    this.contentService.checkAccess(content, userId);
+
+    const contentVariant = await this.findOne(contentVariantId);
+
+    if (contentVariant.contentId !== content.id)
+      throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
+
+    const newContentVariant = new ContentVariantEntity(body, contentId);
+    await this.contentVariantRepository.update(
+      { id: contentVariantId },
+      newContentVariant,
+    );
+  }
+
   async findOne(contentVariantId: number): Promise<ContentVariantEntity> {
     const contentVariant = await this.contentVariantRepository.findOne(
       contentVariantId,
