@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
 import { ContentService } from '../content/content.service';
 import { ContentVariantDto } from './dtos/content-variant.dto';
 import { ContentVariantEntity } from './entities/content-variant.entity';
@@ -24,5 +25,31 @@ export class ContentVariantService {
     const newContentVariant = new ContentVariantEntity(body, contentId);
 
     return this.contentVariantRepository.save(newContentVariant);
+  }
+
+  async getOne(
+    contentVariantId: number,
+    contentId: number,
+    userId: number,
+  ): Promise<ContentVariantEntity> {
+    const content = await this.contentService.findOne(contentId);
+    this.contentService.checkAccess(content, userId);
+
+    const contentVariant = await this.findOne(contentVariantId);
+
+    if (contentVariant.contentId !== content.id)
+      throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
+
+    return contentVariant;
+  }
+
+  async findOne(contentVariantId: number): Promise<ContentVariantEntity> {
+    const contentVariant = await this.contentVariantRepository.findOne(
+      contentVariantId,
+    );
+
+    if (!contentVariant) throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
+
+    return contentVariant;
   }
 }

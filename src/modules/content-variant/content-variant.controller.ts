@@ -1,9 +1,18 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  UseGuards
+} from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
 import { ContentVariantService } from './content-variant.service';
 import { ContentVariantDto } from './dtos/content-variant.dto';
+import { ContentVariantEntity } from './entities/content-variant.entity';
 
 @Controller('contents/:contentId/variants')
 @UseGuards(AuthGuard)
@@ -23,5 +32,18 @@ export class ContentVariantController {
     );
 
     return { id };
+  }
+
+  @Get(':id')
+  async getContentVariant(
+    @Param('id', ParseIntPipe) contentVariantId: number,
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @User('id') userId: number,
+  ): Promise<ContentVariantEntity> {
+    return this.contentVariantService.getOne(
+      contentVariantId,
+      contentId,
+      userId,
+    );
   }
 }
