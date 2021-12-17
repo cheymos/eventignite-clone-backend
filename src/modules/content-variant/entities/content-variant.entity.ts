@@ -26,8 +26,8 @@ export class ContentVariantEntity {
   @Column()
   contentId: number;
 
-  constructor(body: string, ownerId: number) {
+  constructor(body: string, contentId: number) {
     this.body = body;
-    this.contentId = ownerId;
+    this.contentId = contentId;
   }
 }
