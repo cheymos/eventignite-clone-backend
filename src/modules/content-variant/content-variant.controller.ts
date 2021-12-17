@@ -8,6 +8,7 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
+import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
 import { ContentVariantService } from './content-variant.service';
@@ -45,5 +46,13 @@ export class ContentVariantController {
       contentId,
       userId,
     );
+  }
+
+  @Get()
+  async getAllContentVariants(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @User('id') userId: number,
+  ): Promise<PaginateResponse<ContentVariantEntity>> {
+    return this.contentVariantService.getAllVariants(contentId, userId);
   }
 }

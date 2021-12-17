@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
+import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentService } from '../content/content.service';
 import { ContentVariantDto } from './dtos/content-variant.dto';
 import { ContentVariantEntity } from './entities/content-variant.entity';
@@ -41,6 +42,21 @@ export class ContentVariantService {
       throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
 
     return contentVariant;
+  }
+
+  async getAllVariants(
+    contentId: number,
+    userId: number,
+  ): Promise<PaginateResponse<ContentVariantEntity>> {
+    const content = await this.contentService.findOne(contentId);
+
+    this.contentService.checkAccess(content, userId);
+
+    const [data, total] = await this.contentVariantRepository.findAndCount({
+      contentId,
+    });
+
+    return { data, total };
   }
 
   async findOne(contentVariantId: number): Promise<ContentVariantEntity> {
