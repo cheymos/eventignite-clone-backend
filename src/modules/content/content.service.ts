@@ -19,8 +19,8 @@ export class ContentService {
     private readonly contentRepository: Repository<ContentEntity>,
   ) {}
 
-  async create({ type, body }: ContentDto, userId: number): Promise<number> {
-    const newContent = new ContentEntity(type, body, userId);
+  async create({ type }: ContentDto, userId: number): Promise<number> {
+    const newContent = new ContentEntity(type, userId);
     const { id } = await this.contentRepository.save(newContent);
 
     return id;
@@ -35,13 +35,13 @@ export class ContentService {
 
   async update(
     contentId: number,
-    { type, body }: ContentDto,
+    { type }: ContentDto,
     userId: number,
   ): Promise<void> {
     const content = await this.findOne(contentId);
     this.checkAccess(content, userId);
 
-    const newContent = new ContentEntity(type, body, userId);
+    const newContent = new ContentEntity(type, userId);
     this.contentRepository.update({ id: content.id }, newContent);
   }
 
@@ -58,8 +58,8 @@ export class ContentService {
     if (!isAllow) throw new ForbiddenException(NO_ACCESS_CONTENT);
   }
 
-  async findOne(playlistId: number): Promise<ContentEntity> {
-    const content = await this.contentRepository.findOne(playlistId);
+  async findOne(contentId: number): Promise<ContentEntity> {
+    const content = await this.contentRepository.findOne(contentId);
 
     if (!content) throw new NotFoundException(CONTENT_NOT_FOUND);
 
