@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { ContentEntity } from './content.entity';
+import { ContentEntity } from '../../content/entities/content.entity';
 
 export enum ContentType {
   Video = 'video',
