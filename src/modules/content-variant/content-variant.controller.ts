@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -69,6 +70,20 @@ export class ContentVariantController {
   ): Promise<void> {
     await this.contentVariantService.update(
       contentVariantDto,
+      contentVariantId,
+      contentId,
+      userId,
+    );
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteContentVariant(
+    @Param('id', ParseIntPipe) contentVariantId: number,
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.contentVariantService.delete(
       contentVariantId,
       contentId,
       userId,
