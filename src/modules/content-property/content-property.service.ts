@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
+import {
+  CONTENT_PROPERTY_NOT_FOUND,
+  CONTENT_VARIANT_NOT_FOUND
+} from '../../common/constants/error.constants';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentService } from '../content/content.service';
 import { ContentPropertyDto } from './dtos/content-property.dto';
@@ -16,7 +19,7 @@ export class ContentPropertyService {
   constructor(
     @InjectRepository(ContentPropertyEntity)
     private readonly contentPropertyRepository: Repository<ContentPropertyEntity>,
-    private readonly contentService: ContentService
+    private readonly contentService: ContentService,
   ) {}
 
   async create(
@@ -59,6 +62,43 @@ export class ContentPropertyService {
     });
 
     return { data, total };
+  }
+
+  async update(
+    contentPropertyId: number,
+    { property, value }: ContentPropertyDto,
+    contentId: number,
+    contentVariantId: number,
+    userId: number,
+  ): Promise<void> {
+    this.checkAccessToContent(contentId, userId);
+
+    const contentProperty = await this.findOne(contentPropertyId);
+
+    if (contentProperty.contentVariantId !== contentVariantId)
+      throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
+
+    const newContentProperty = new ContentPropertyEntity(
+      property,
+      value,
+      contentVariantId,
+    );
+
+    await this.contentPropertyRepository.update(
+      { id: contentPropertyId },
+      newContentProperty,
+    );
+  }
+
+  async findOne(contentPropertyId: number): Promise<ContentPropertyEntity> {
+    const contentProperty = await this.contentPropertyRepository.findOne(
+      contentPropertyId,
+    );
+
+    if (!contentProperty)
+      throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
+
+    return contentProperty;
   }
 
   private async checkAccessToContent(

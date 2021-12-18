@@ -1,10 +1,12 @@
 import {
   Body,
-  Controller,
-  Get,
+  Controller, Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   UseGuards
 } from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
@@ -45,6 +47,28 @@ export class ContentPropertyController {
     @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
     @User('id') userId: number,
   ): Promise<PaginateResponse<ContentPropertyEntity>> {
-    return this.contentPropertyService.getAll(contentId, contentVariantId, userId);
+    return this.contentPropertyService.getAll(
+      contentId,
+      contentVariantId,
+      userId,
+    );
+  }
+
+  @Put(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateProperty(
+    @Body() contentPropertyDto: ContentPropertyDto,
+    @Param('id', ParseIntPipe) contentPropertyId: number,
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.contentPropertyService.update(
+      contentPropertyId,
+      contentPropertyDto,
+      contentId,
+      contentVariantId,
+      userId,
+    );
   }
 }
