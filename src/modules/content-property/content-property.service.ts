@@ -16,7 +16,7 @@ export class ContentPropertyService {
   constructor(
     @InjectRepository(ContentPropertyEntity)
     private readonly contentPropertyRepository: Repository<ContentPropertyEntity>,
-    private readonly contentService: ContentService,
+    private readonly contentService: ContentService
   ) {}
 
   async create(
@@ -25,8 +25,7 @@ export class ContentPropertyService {
     contentVariantId: number,
     userId: number,
   ): Promise<ContentPropertyEntity> {
-    const content = await this.contentService.findOne(contentId);
-    this.contentService.checkAccess(content, userId);
+    this.checkAccessToContent(contentId, userId);
 
     const newContentProperty = new ContentPropertyEntity(
       property,
@@ -53,13 +52,20 @@ export class ContentPropertyService {
     contentVariantId: number,
     userId: number,
   ): Promise<PaginateResponse<ContentPropertyEntity>> {
-    const content = await this.contentService.findOne(contentId);
-    this.contentService.checkAccess(content, userId);
+    this.checkAccessToContent(contentId, userId);
 
     const [data, total] = await this.contentPropertyRepository.findAndCount({
       contentVariantId,
     });
 
     return { data, total };
+  }
+
+  private async checkAccessToContent(
+    contentId: number,
+    userId: number,
+  ): Promise<void> {
+    const content = await this.contentService.findOne(contentId);
+    this.contentService.checkAccess(content, userId);
   }
 }
