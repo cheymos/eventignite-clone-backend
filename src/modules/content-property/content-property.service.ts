@@ -90,6 +90,22 @@ export class ContentPropertyService {
     );
   }
 
+  async delete(
+    contentPropertyId: number,
+    contentId: number,
+    contentVariantId: number,
+    userId: number,
+  ): Promise<void> {
+    this.checkAccessToContent(contentId, userId);
+
+    const contentProperty = await this.findOne(contentPropertyId);
+
+    if (contentProperty.contentVariantId !== contentVariantId)
+      throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
+
+    await this.contentPropertyRepository.remove(contentProperty);
+  }
+
   async findOne(contentPropertyId: number): Promise<ContentPropertyEntity> {
     const contentProperty = await this.contentPropertyRepository.findOne(
       contentPropertyId,

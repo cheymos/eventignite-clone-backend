@@ -1,6 +1,8 @@
 import {
   Body,
-  Controller, Get,
+  Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -66,6 +68,22 @@ export class ContentPropertyController {
     await this.contentPropertyService.update(
       contentPropertyId,
       contentPropertyDto,
+      contentId,
+      contentVariantId,
+      userId,
+    );
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteProperty(
+    @Param('id', ParseIntPipe) contentPropertyId: number,
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
+    @User('id') userId: number,
+  ): Promise<void> {
+    await this.contentPropertyService.delete(
+      contentPropertyId,
       contentId,
       contentVariantId,
       userId,
