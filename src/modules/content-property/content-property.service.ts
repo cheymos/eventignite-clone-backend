@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
+import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentService } from '../content/content.service';
 import { ContentPropertyDto } from './dtos/content-property.dto';
 import { ContentPropertyEntity } from './entities/content-property.entity';
@@ -45,5 +46,20 @@ export class ContentPropertyService {
 
       throw new ImATeapotException(e);
     }
+  }
+
+  async getAll(
+    contentId: number,
+    contentVariantId: number,
+    userId: number,
+  ): Promise<PaginateResponse<ContentPropertyEntity>> {
+    const content = await this.contentService.findOne(contentId);
+    this.contentService.checkAccess(content, userId);
+
+    const [data, total] = await this.contentPropertyRepository.findAndCount({
+      contentVariantId,
+    });
+
+    return { data, total };
   }
 }

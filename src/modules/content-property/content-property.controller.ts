@@ -1,16 +1,19 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseIntPipe,
   Post,
   UseGuards
 } from '@nestjs/common';
 import { CreatedResponse } from '../../common/types/created-response.type';
+import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
 import { ContentPropertyService } from './content-property.service';
 import { ContentPropertyDto } from './dtos/content-property.dto';
+import { ContentPropertyEntity } from './entities/content-property.entity';
 
 @Controller('contents/:contentId/variants/:contentVariantId/properties')
 @UseGuards(AuthGuard)
@@ -34,5 +37,14 @@ export class ContentPropertyController {
     );
 
     return { id };
+  }
+
+  @Get()
+  async getAllContentVariantProperties(
+    @Param('contentId', ParseIntPipe) contentId: number,
+    @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
+    @User('id') userId: number,
+  ): Promise<PaginateResponse<ContentPropertyEntity>> {
+    return this.contentPropertyService.getAll(contentId, contentVariantId, userId);
   }
 }
