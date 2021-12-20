@@ -34,3 +34,4 @@ export const CONTENT_PROPERTY_NOT_FOUND = 'The content property was not found';
 export const ACCESS_DENIED = 'Access denied';
 export const PLAYLIST_OR_EVENT_NOT_FOUND = 'Playlist or event not found';
 export const FILE_NOT_FOUND = 'File not found';
+export const FILE_NOT_ATTACHED = 'File not attached';

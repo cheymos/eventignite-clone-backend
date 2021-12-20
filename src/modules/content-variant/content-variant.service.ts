@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentService } from '../content/content.service';
-import { ContentVariantDto } from './dtos/content-variant.dto';
+import { FileService } from '../file/file.service';
 import { ContentVariantEntity } from './entities/content-variant.entity';
 
 @Injectable()
@@ -13,17 +13,20 @@ export class ContentVariantService {
     @InjectRepository(ContentVariantEntity)
     private readonly contentVariantRepository: Repository<ContentVariantEntity>,
     private readonly contentService: ContentService,
+    private readonly fileService: FileService,
   ) {}
 
   async create(
-    { body }: ContentVariantDto,
+    filename: string,
+    dataBuffer: Buffer,
     contentId: number,
     userId: number,
   ): Promise<ContentVariantEntity> {
     const content = await this.contentService.findOne(contentId);
     this.contentService.checkAccess(content, userId);
 
-    const newContentVariant = new ContentVariantEntity(body, contentId);
+    const file = await this.fileService.upload(dataBuffer, filename);
+    const newContentVariant = new ContentVariantEntity(file, contentId);
 
     return this.contentVariantRepository.save(newContentVariant);
   }
@@ -60,7 +63,8 @@ export class ContentVariantService {
   }
 
   async update(
-    { body }: ContentVariantDto,
+    filename: string,
+    dataBuffer: Buffer,
     contentVariantId: number,
     contentId: number,
     userId: number,
@@ -73,7 +77,9 @@ export class ContentVariantService {
     if (contentVariant.contentId !== content.id)
       throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
 
-    const newContentVariant = new ContentVariantEntity(body, contentId);
+    const file = await this.fileService.upload(dataBuffer, filename);
+    const newContentVariant = new ContentVariantEntity(file, contentId);
+
     await this.contentVariantRepository.update(
       { id: contentVariantId },
       newContentVariant,

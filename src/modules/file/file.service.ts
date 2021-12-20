@@ -40,8 +40,8 @@ export class FileService {
       const file = await this.fileRepository.save(newFile);
 
       return file;
-    } catch (e) {
-      throw new ImATeapotException(e);
+    } catch (e: any) {
+      throw new ImATeapotException(e.message);
     }
   }
 
