@@ -1,13 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn
+} from 'typeorm';
 import { ContentEntity } from '../../content/entities/content.entity';
-
-export enum ContentType {
-  Video = 'video',
-  Audio = 'audio',
-  Picture = 'picture',
-  Html = 'html',
-}
+import { FileEntity } from '../../file/entities/file.entity';
 
 @Entity('content_variants')
 export class ContentVariantEntity {
@@ -16,8 +17,9 @@ export class ContentVariantEntity {
   readonly id: number;
 
   @ApiProperty()
-  @Column('text')
-  body: string;
+  @OneToOne(() => FileEntity, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  file: FileEntity;
 
   @ManyToOne(() => ContentEntity, { onDelete: 'CASCADE' })
   content?: ContentEntity;
@@ -26,8 +28,8 @@ export class ContentVariantEntity {
   @Column()
   contentId: number;
 
-  constructor(body: string, contentId: number) {
-    this.body = body;
+  constructor(file: FileEntity, contentId: number) {
+    this.file = file;
     this.contentId = contentId;
   }
 }
