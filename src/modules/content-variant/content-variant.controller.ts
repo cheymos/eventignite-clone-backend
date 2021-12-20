@@ -1,5 +1,4 @@
 import {
-  Body,
   Controller,
   Delete,
   Get,
@@ -9,16 +8,28 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  UseGuards
+  UploadedFile,
+  UseGuards,
+  UseInterceptors
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiExtraModels,
+  ApiOperation,
+  ApiResponse,
+  ApiTags
+} from '@nestjs/swagger';
+import { FILE_NOT_ATTACHED } from '../../common/constants/error.constants';
+import { ValueExistsPipe } from '../../common/pipes/value-exists.pipe';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { getPaginateResponseOptions } from '../../utils/get-paginate-response-options.util';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { User } from '../user/decorators/user.decorator';
 import { ContentVariantService } from './content-variant.service';
-import { ContentVariantDto } from './dtos/content-variant.dto';
 import { ContentVariantEntity } from './entities/content-variant.entity';
 
 @Controller('contents/:contentId/variants')
@@ -35,14 +46,29 @@ export class ContentVariantController {
     description: 'Successfully created',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
   @Post()
   async createContentVariant(
-    @Body() contentVariantDto: ContentVariantDto,
+    @UploadedFile(new ValueExistsPipe(FILE_NOT_ATTACHED))
+    { filename, buffer }: Express.Multer.File,
     @Param('contentId', ParseIntPipe) contentId: number,
     @User('id') userId: number,
   ): Promise<CreatedResponse> {
     const { id } = await this.contentVariantService.create(
-      contentVariantDto,
+      filename,
+      buffer,
       contentId,
       userId,
     );
@@ -90,16 +116,18 @@ export class ContentVariantController {
   @ApiResponse({ status: 204, description: 'Successfully updated' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Content variant not found' })
+  @UseInterceptors(FileInterceptor('file'))
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateContentVariant(
-    @Body() contentVariantDto: ContentVariantDto,
+    @UploadedFile() { filename, buffer }: Express.Multer.File,
     @Param('id', ParseIntPipe) contentVariantId: number,
     @Param('contentId', ParseIntPipe) contentId: number,
     @User('id') userId: number,
   ): Promise<void> {
     await this.contentVariantService.update(
-      contentVariantDto,
+      filename,
+      buffer,
       contentVariantId,
       contentId,
       userId,
