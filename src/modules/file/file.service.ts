@@ -1,11 +1,13 @@
 import {
   ImATeapotException,
-  Injectable
+  Injectable,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { config, S3 } from 'aws-sdk';
 import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
+import { FILE_NOT_FOUND } from '../../common/constants/error.constants';
 import { FileEntity } from './entities/file.entity';
 
 @Injectable()
@@ -38,6 +40,25 @@ export class FileService {
       const file = await this.fileRepository.save(newFile);
 
       return file;
+    } catch (e) {
+      throw new ImATeapotException(e);
+    }
+  }
+
+  async delete(fileId: number): Promise<void> {
+    try {
+      const file = await this.fileRepository.findOne({ id: fileId });
+
+      if (!file) throw new NotFoundException(FILE_NOT_FOUND);
+
+      await this.s3Client
+        .deleteObject({
+          Bucket: this.BUCKET,
+          Key: file.key,
+        })
+        .promise();
+
+      await this.fileRepository.delete(fileId);
     } catch (e) {
       throw new ImATeapotException(e);
     }
