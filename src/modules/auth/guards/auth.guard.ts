@@ -1,19 +1,5 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException
-} from '@nestjs/common';
-import { ModifyExpressRequest } from '../../../common/types/modify-express-request.type';
+import { Injectable } from '@nestjs/common';
+import { AuthGuard as AG } from '@nestjs/passport';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
-    const request = context.switchToHttp().getRequest<ModifyExpressRequest>();
-
-    const { userPayload } = request;
-    if (!userPayload) throw new UnauthorizedException();
-
-    return true;
-  }
-}
+export class AuthGuard extends AG('jwt') {}
