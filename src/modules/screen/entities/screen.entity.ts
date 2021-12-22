@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { EventEntity } from '../../event/entities/event.entity';
 import { PlaylistEntity } from '../../playlist/entities/playlist.entity';
-import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('screens')
 export class ScreenEntity {
@@ -40,19 +39,16 @@ export class ScreenEntity {
   @Column()
   playlistId: number;
 
-  @ManyToOne(() => UserEntity)
-  owner: UserEntity;
-
   @ApiProperty()
   @Column()
-  ownerId: number;
+  ownerId: string;
 
   constructor(
     name: string,
     description: string,
     eventId: number,
     playlistId: number,
-    ownerId: number,
+    ownerId: string,
   ) {
     this.name = name;
     this.description = description;

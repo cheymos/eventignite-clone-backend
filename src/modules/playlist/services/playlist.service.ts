@@ -1,13 +1,13 @@
 import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException
+    ForbiddenException,
+    Injectable,
+    NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  NO_ACCESS_PLAYLIST,
-  PLAYLIST_NOT_FOUND
+    NO_ACCESS_PLAYLIST,
+    PLAYLIST_NOT_FOUND
 } from '../../../common/constants/error.constants';
 import { PlaylistDto } from '../dtos/playlist.dto';
 import { PlaylistEntity } from '../entities/playlist.entity';
@@ -21,7 +21,7 @@ export class PlaylistService {
 
   async create(
     { name, description }: PlaylistDto,
-    userId: number,
+    userId: string,
   ): Promise<number> {
     const newPlaylist = new PlaylistEntity(name, description, userId);
     const playlist = await this.playlistRepositoty.save(newPlaylist);
@@ -29,7 +29,7 @@ export class PlaylistService {
     return playlist.id;
   }
 
-  async getOne(playlistId: number, userId: number): Promise<PlaylistEntity> {
+  async getOne(playlistId: number, userId: string): Promise<PlaylistEntity> {
     const playlist = await this.findOne(playlistId);
     this.checkAccess(playlist, userId);
 
@@ -39,7 +39,7 @@ export class PlaylistService {
   async update(
     playlistId: number,
     { name, description }: PlaylistDto,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     const playlist = await this.findOne(playlistId);
     this.checkAccess(playlist, userId);
@@ -48,14 +48,14 @@ export class PlaylistService {
     this.playlistRepositoty.update({ id: playlist.id }, newPlaylist);
   }
 
-  async delete(playlistId: number, userId: number): Promise<void> {
+  async delete(playlistId: number, userId: string): Promise<void> {
     const playlist = await this.findOne(playlistId);
     this.checkAccess(playlist, userId);
 
     await this.playlistRepositoty.delete({ id: playlistId });
   }
 
-  checkAccess(playlist: PlaylistEntity, userId: number): void {
+  checkAccess(playlist: PlaylistEntity, userId: string): void {
     const isAllow = playlist.ownerId === userId;
 
     if (!isAllow) throw new ForbiddenException(NO_ACCESS_PLAYLIST);

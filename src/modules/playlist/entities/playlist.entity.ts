@@ -1,13 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
-  Entity,
-  ManyToOne,
-  OneToOne,
+  Entity, OneToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
 import { ScreenEntity } from '../../screen/entities/screen.entity';
-import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('playlists')
 export class PlaylistEntity {
@@ -23,17 +20,14 @@ export class PlaylistEntity {
   @Column({ nullable: true })
   description?: string;
 
-  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  owner?: UserEntity;
-
   @ApiProperty()
   @Column()
-  ownerId: number;
+  ownerId: string;
 
   @OneToOne(() => ScreenEntity, (screenEntity) => screenEntity.playlist)
   screen?: ScreenEntity;
 
-  constructor(name: string, description: string, ownerId: number) {
+  constructor(name: string, description: string, ownerId: string) {
     this.name = name;
     this.description = description;
     this.ownerId = ownerId;

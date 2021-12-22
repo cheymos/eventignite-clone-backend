@@ -1,13 +1,13 @@
 import {
-  ImATeapotException,
-  Injectable,
-  NotFoundException
+    ImATeapotException,
+    Injectable,
+    NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  CONTENT_PROPERTY_NOT_FOUND,
-  CONTENT_VARIANT_NOT_FOUND
+    CONTENT_PROPERTY_NOT_FOUND,
+    CONTENT_VARIANT_NOT_FOUND
 } from '../../common/constants/error.constants';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentService } from '../content/content.service';
@@ -26,7 +26,7 @@ export class ContentPropertyService {
     { property, value }: ContentPropertyDto,
     contentId: number,
     contentVariantId: number,
-    userId: number,
+    userId: string,
   ): Promise<ContentPropertyEntity> {
     this.checkAccessToContent(contentId, userId);
 
@@ -53,7 +53,7 @@ export class ContentPropertyService {
   async getAll(
     contentId: number,
     contentVariantId: number,
-    userId: number,
+    userId: string,
   ): Promise<PaginateResponse<ContentPropertyEntity>> {
     this.checkAccessToContent(contentId, userId);
 
@@ -69,7 +69,7 @@ export class ContentPropertyService {
     { property, value }: ContentPropertyDto,
     contentId: number,
     contentVariantId: number,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     this.checkAccessToContent(contentId, userId);
 
@@ -94,7 +94,7 @@ export class ContentPropertyService {
     contentPropertyId: number,
     contentId: number,
     contentVariantId: number,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     this.checkAccessToContent(contentId, userId);
 
@@ -119,7 +119,7 @@ export class ContentPropertyService {
 
   private async checkAccessToContent(
     contentId: number,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     const content = await this.contentService.findOne(contentId);
     this.contentService.checkAccess(content, userId);

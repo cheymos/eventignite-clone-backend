@@ -27,7 +27,7 @@ export class ScreenService {
 
   async create(
     { name, description, playlistId, eventId }: ScreenDto,
-    userId: number,
+    userId: string,
   ): Promise<number> {
     try {
       const event = await this.eventService.findOne(eventId);
@@ -56,7 +56,7 @@ export class ScreenService {
     }
   }
 
-  async getOne(screenId: number, userId: number): Promise<ScreenEntity> {
+  async getOne(screenId: number, userId: string): Promise<ScreenEntity> {
     const screen = await this.findOne(screenId);
     this.checkAccess(screen, userId);
 
@@ -66,7 +66,7 @@ export class ScreenService {
   async update(
     screenId: number,
     { name, description, eventId, playlistId }: ScreenDto,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     try {
       const screen = await this.findOne(screenId);
@@ -96,14 +96,14 @@ export class ScreenService {
     }
   }
 
-  async delete(screenId: number, userId: number): Promise<void> {
+  async delete(screenId: number, userId: string): Promise<void> {
     const screen = await this.findOne(screenId);
     this.checkAccess(screen, userId);
 
     await this.screenRepository.delete({ id: screenId });
   }
 
-  checkAccess(screen: ScreenEntity, userId: number): void {
+  checkAccess(screen: ScreenEntity, userId: string): void {
     const isAllow = screen.ownerId === userId;
 
     if (!isAllow) throw new ForbiddenException(NO_ACCESS_SCREEN);

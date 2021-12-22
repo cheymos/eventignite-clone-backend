@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from '../../user/entities/user.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('events')
 export class EventEntity {
@@ -16,14 +15,11 @@ export class EventEntity {
   @Column({ nullable: true })
   description?: string;
 
-  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  owner?: UserEntity;
-
   @ApiProperty()
   @Column()
-  ownerId: number;
+  ownerId: string;
 
-  constructor(name: string, description: string, ownerId: number) {
+  constructor(name: string, description: string, ownerId: string) {
     this.name = name;
     this.description = description;
     this.ownerId = ownerId;

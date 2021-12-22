@@ -1,14 +1,14 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { ModifyExpressRequest } from '../../../common/types/modify-express-request.type';
-import { TokenPayload } from '../../auth/types/token-payload.type';
+import { TokenPayload } from '../../modules/auth/types/token-payload.type';
+import { ModifyExpressRequest } from '../types/modify-express-request.type';
 
 export const User = createParamDecorator(
   (data: keyof TokenPayload, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<ModifyExpressRequest>();
 
-    if (!request.userPayload) return null;
+    if (!request.user) return null;
 
-    const user = request.userPayload;
+    const { user } = request;
 
     return data ? user?.[data] : user;
   },

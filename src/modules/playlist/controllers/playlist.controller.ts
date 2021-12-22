@@ -17,9 +17,9 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
+import { User } from '../../../common/decorators/user.decorator';
 import { CreatedResponse } from '../../../common/types/created-response.type';
 import { AuthGuard } from '../../auth/guards/auth.guard';
-import { User } from '../../user/decorators/user.decorator';
 import { PlaylistDto } from '../dtos/playlist.dto';
 import { PlaylistEntity } from '../entities/playlist.entity';
 import { PlaylistService } from '../services/playlist.service';
@@ -41,7 +41,7 @@ export class PlaylistController {
   @Post()
   async createPlaylist(
     @Body() playlistDto: PlaylistDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<CreatedResponse> {
     const id = await this.playlistService.create(playlistDto, userId);
 
@@ -60,7 +60,7 @@ export class PlaylistController {
   @Get(':id')
   async getPlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<PlaylistEntity> {
     return this.playlistService.getOne(playlistId, userId);
   }
@@ -75,7 +75,7 @@ export class PlaylistController {
   async updatePlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
     @Body() playlistDto: PlaylistDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.playlistService.update(playlistId, playlistDto, userId);
   }
@@ -89,7 +89,7 @@ export class PlaylistController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.playlistService.delete(playlistId, userId);
   }

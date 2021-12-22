@@ -12,10 +12,10 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from '../../common/decorators/user.decorator';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { User } from '../user/decorators/user.decorator';
 import { ContentPropertyService } from './content-property.service';
 import { ContentPropertyDto } from './dtos/content-property.dto';
 import { ContentPropertyEntity } from './entities/content-property.entity';
@@ -41,7 +41,7 @@ export class ContentPropertyController {
     @Body() contentPropertyDto: ContentPropertyDto,
     @Param('contentId', ParseIntPipe) contentId: number,
     @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<CreatedResponse> {
     const { id } = await this.contentPropertyService.create(
       contentPropertyDto,
@@ -66,7 +66,7 @@ export class ContentPropertyController {
   async getAllContentVariantProperties(
     @Param('contentId', ParseIntPipe) contentId: number,
     @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<PaginateResponse<ContentPropertyEntity>> {
     return this.contentPropertyService.getAll(
       contentId,
@@ -87,7 +87,7 @@ export class ContentPropertyController {
     @Param('id', ParseIntPipe) contentPropertyId: number,
     @Param('contentId', ParseIntPipe) contentId: number,
     @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.contentPropertyService.update(
       contentPropertyId,
@@ -109,7 +109,7 @@ export class ContentPropertyController {
     @Param('id', ParseIntPipe) contentPropertyId: number,
     @Param('contentId', ParseIntPipe) contentId: number,
     @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.contentPropertyService.delete(
       contentPropertyId,

@@ -1,7 +1,7 @@
 import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException
+    Injectable,
+    NotFoundException,
+    UnprocessableEntityException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -24,7 +24,7 @@ export class PlaylistContentService {
   async addContentToPlaylist(
     { contentId, duration, pos }: PlaylistContentDto,
     playlistId: number,
-    userId: number,
+    userId: string,
   ): Promise<number> {
     const playlist = await this.playlistService.findOne(playlistId);
     this.playlistService.checkAccess(playlist, userId);
@@ -51,7 +51,7 @@ export class PlaylistContentService {
 
   async getPlaylistWithAllContents(
     playlistId: number,
-    userId: number,
+    userId: string,
   ): Promise<PaginateResponse<PlaylistContentEntity>> {
     const playlist = await this.playlistService.findOne(playlistId);
     this.playlistService.checkAccess(playlist, userId);
@@ -70,7 +70,7 @@ export class PlaylistContentService {
     { contentId, pos, duration }: PlaylistContentDto,
     playlistId: number,
     playlistContentId: number,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     const playlist = await this.playlistService.findOne(playlistId);
     this.playlistService.checkAccess(playlist, userId);
@@ -98,7 +98,7 @@ export class PlaylistContentService {
   async deleteContentFromPlaylist(
     playlistId: number,
     playlistContentId: number,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     const playlist = await this.playlistService.findOne(playlistId);
     this.playlistService.checkAccess(playlist, userId);

@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { UserEntity } from '../../user/entities/user.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum ContentType {
   Video = 'video',
@@ -19,14 +18,11 @@ export class ContentEntity {
   @Column({ type: 'enum', enum: ContentType })
   type: ContentType;
 
-  @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
-  owner?: UserEntity;
-
   @ApiProperty()
   @Column()
-  ownerId: number;
+  ownerId: string;
 
-  constructor(type: ContentType, ownerId: number) {
+  constructor(type: ContentType, ownerId: string) {
     this.type = type;
     this.ownerId = ownerId;
   }

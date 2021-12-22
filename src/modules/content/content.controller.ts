@@ -17,9 +17,9 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
+import { User } from '../../common/decorators/user.decorator';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { User } from '../user/decorators/user.decorator';
 import { ContentService } from './content.service';
 import { ContentDto } from './dtos/content.dto';
 import { ContentEntity } from './entities/content.entity';
@@ -41,7 +41,7 @@ export class ContentController {
   @Post()
   async createContent(
     @Body() contentDto: ContentDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<CreatedResponse> {
     const id = await this.contentService.create(contentDto, userId);
 
@@ -60,7 +60,7 @@ export class ContentController {
   @Get(':id')
   async getContent(
     @Param('id', ParseIntPipe) contentId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<ContentEntity> {
     return this.contentService.getOne(contentId, userId);
   }
@@ -75,7 +75,7 @@ export class ContentController {
   async updateContent(
     @Param('id', ParseIntPipe) contentId: number,
     @Body() contentDto: ContentDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.contentService.update(contentId, contentDto, userId);
   }
@@ -89,7 +89,7 @@ export class ContentController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteContent(
     @Param('id', ParseIntPipe) contentId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.contentService.delete(contentId, userId);
   }

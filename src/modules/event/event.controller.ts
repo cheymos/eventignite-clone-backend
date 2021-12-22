@@ -17,9 +17,9 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
+import { User } from '../../common/decorators/user.decorator';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { User } from '../user/decorators/user.decorator';
 import { EventDto } from './dtos/event.dto';
 import { EventEntity } from './entities/event.entity';
 import { EventService } from './event.service';
@@ -41,7 +41,7 @@ export class EventController {
   @Post()
   async createEvent(
     @Body() eventDto: EventDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<CreatedResponse> {
     const id = await this.eventService.create(eventDto, userId);
 
@@ -60,7 +60,7 @@ export class EventController {
   @Get(':id')
   async getEvent(
     @Param('id', ParseIntPipe) eventId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<EventEntity> {
     return this.eventService.getOne(eventId, userId);
   }
@@ -75,7 +75,7 @@ export class EventController {
   async updateEvent(
     @Param('id', ParseIntPipe) eventId: number,
     @Body() eventDto: EventDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.eventService.update(eventId, eventDto, userId);
   }
@@ -89,7 +89,7 @@ export class EventController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteEvent(
     @Param('id', ParseIntPipe) eventId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.eventService.delete(eventId, userId);
   }

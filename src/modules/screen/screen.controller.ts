@@ -17,9 +17,9 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
+import { User } from '../../common/decorators/user.decorator';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
-import { User } from '../user/decorators/user.decorator';
 import { ScreenDto } from './dtos/screen.dto';
 import { ScreenEntity } from './entities/screen.entity';
 import { ScreenService } from './screen.service';
@@ -41,7 +41,7 @@ export class ScreenController {
   @Post()
   async createScreen(
     @Body() screenDto: ScreenDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<CreatedResponse> {
     const id = await this.screenService.create(screenDto, userId);
 
@@ -60,7 +60,7 @@ export class ScreenController {
   @Get(':id')
   async getScreen(
     @Param('id', ParseIntPipe) screenId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<ScreenEntity> {
     return this.screenService.getOne(screenId, userId);
   }
@@ -75,7 +75,7 @@ export class ScreenController {
   async updateScreen(
     @Param('id', ParseIntPipe) screenId: number,
     @Body() screenDto: ScreenDto,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.screenService.update(screenId, screenDto, userId);
   }
@@ -89,7 +89,7 @@ export class ScreenController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteScreen(
     @Param('id', ParseIntPipe) screenId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.screenService.delete(screenId, userId);
   }

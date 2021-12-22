@@ -18,11 +18,11 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
+import { User } from '../../../common/decorators/user.decorator';
 import { CreatedResponse } from '../../../common/types/created-response.type';
 import { PaginateResponse } from '../../../common/types/paginate-response.type';
 import { getPaginateResponseOptions } from '../../../utils/get-paginate-response-options.util';
 import { AuthGuard } from '../../auth/guards/auth.guard';
-import { User } from '../../user/decorators/user.decorator';
 import { PlaylistContentDto } from '../dtos/playlist-content.dto';
 import { PlaylistContentEntity } from '../entities/playlist-content.entity';
 import { PlaylistContentService } from '../services/playlist-content.service';
@@ -47,7 +47,7 @@ export class PlaylistContentController {
   async addContentToPlaylist(
     @Body() playlistContentDto: PlaylistContentDto,
     @Param('playlistId', ParseIntPipe) playlistId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<CreatedResponse> {
     const id = await this.playlistContentService.addContentToPlaylist(
       playlistContentDto,
@@ -68,7 +68,7 @@ export class PlaylistContentController {
   @Get()
   async getPlaylistWithAllContents(
     @Param('playlistId', ParseIntPipe) playlistId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<PaginateResponse<PlaylistContentEntity>> {
     return await this.playlistContentService.getPlaylistWithAllContents(
       playlistId,
@@ -87,7 +87,7 @@ export class PlaylistContentController {
     @Body() playlistContentDto: PlaylistContentDto,
     @Param('playlistId', ParseIntPipe) playlistId: number,
     @Param('id', ParseIntPipe) playlistContentId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.playlistContentService.updateFullRelationship(
       playlistContentDto,
@@ -107,7 +107,7 @@ export class PlaylistContentController {
   async deleteContentFromPlaylist(
     @Param('playlistId', ParseIntPipe) playlistId: number,
     @Param('id', ParseIntPipe) playlistContentId: number,
-    @User('id') userId: number,
+    @User('sub') userId: string,
   ): Promise<void> {
     await this.playlistContentService.deleteContentFromPlaylist(
       playlistId,

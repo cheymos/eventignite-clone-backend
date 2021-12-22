@@ -1,13 +1,13 @@
 import {
-  ForbiddenException,
-  Injectable,
-  NotFoundException
+    ForbiddenException,
+    Injectable,
+    NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  EVENT_NOT_FOUND,
-  NO_ACCESS_EVENT
+    EVENT_NOT_FOUND,
+    NO_ACCESS_EVENT
 } from '../../common/constants/error.constants';
 import { EventDto } from './dtos/event.dto';
 import { EventEntity } from './entities/event.entity';
@@ -21,7 +21,7 @@ export class EventService {
 
   async create(
     { name, description }: EventDto,
-    userId: number,
+    userId: string,
   ): Promise<number> {
     const event = new EventEntity(name, description, userId);
     const createdEvent = await this.eventRepository.save(event);
@@ -29,7 +29,7 @@ export class EventService {
     return createdEvent.id;
   }
 
-  async getOne(eventId: number, userId: number): Promise<EventEntity> {
+  async getOne(eventId: number, userId: string): Promise<EventEntity> {
     const event = await this.findOne(eventId);
     this.checkAccess(event, userId);
 
@@ -39,7 +39,7 @@ export class EventService {
   async update(
     eventId: number,
     { name, description }: EventDto,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     const event = await this.findOne(eventId);
     this.checkAccess(event, userId);
@@ -48,14 +48,14 @@ export class EventService {
     this.eventRepository.update({ id: event.id }, newEvent);
   }
 
-  async delete(eventId: number, userId: number): Promise<void> {
+  async delete(eventId: number, userId: string): Promise<void> {
     const event = await this.findOne(eventId);
     this.checkAccess(event, userId);
 
     await this.eventRepository.delete({ id: eventId });
   }
 
-  checkAccess(event: EventEntity, userId: number): void {
+  checkAccess(event: EventEntity, userId: string): void {
     const isAllow = event.ownerId === userId;
 
     if (!isAllow) throw new ForbiddenException(NO_ACCESS_EVENT);

@@ -20,7 +20,7 @@ export class ContentVariantService {
     filename: string,
     dataBuffer: Buffer,
     contentId: number,
-    userId: number,
+    userId: string,
   ): Promise<ContentVariantEntity> {
     const content = await this.contentService.findOne(contentId);
     this.contentService.checkAccess(content, userId);
@@ -34,7 +34,7 @@ export class ContentVariantService {
   async getOne(
     contentVariantId: number,
     contentId: number,
-    userId: number,
+    userId: string,
   ): Promise<ContentVariantEntity> {
     const content = await this.contentService.findOne(contentId);
     this.contentService.checkAccess(content, userId);
@@ -49,7 +49,7 @@ export class ContentVariantService {
 
   async getAllVariants(
     contentId: number,
-    userId: number,
+    userId: string,
   ): Promise<PaginateResponse<ContentVariantEntity>> {
     const content = await this.contentService.findOne(contentId);
 
@@ -67,7 +67,7 @@ export class ContentVariantService {
     dataBuffer: Buffer,
     contentVariantId: number,
     contentId: number,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     const content = await this.contentService.findOne(contentId);
     this.contentService.checkAccess(content, userId);
@@ -89,7 +89,7 @@ export class ContentVariantService {
   async delete(
     contentVariantId: number,
     contentId: number,
-    userId: number,
+    userId: string,
   ): Promise<void> {
     const content = await this.contentService.findOne(contentId);
     this.contentService.checkAccess(content, userId);

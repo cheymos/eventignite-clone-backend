@@ -9,13 +9,11 @@ import { ContentModule } from './modules/content/content.module';
 import { EventModule } from './modules/event/event.module';
 import { PlaylistModule } from './modules/playlist/playlist.module';
 import { ScreenModule } from './modules/screen/screen.module';
-import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot(getOrmConfig()),
-    UserModule,
     AuthModule,
     EventModule,
     ScreenModule,
