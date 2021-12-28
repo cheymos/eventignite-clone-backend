@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { User } from '../../common/decorators/user.decorator';
 import { OwnerGuard } from '../../common/guards/owner.guard';
-import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ContentRepository } from './content.repository';
 import { ContentService } from './content.service';
@@ -36,7 +35,7 @@ export class ContentController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
-    type: CreatedResponse,
+    type: ContentEntity,
     description: 'Successfully created',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -44,10 +43,8 @@ export class ContentController {
   async createContent(
     @Body() contentDto: ContentDto,
     @User('sub') userId: string,
-  ): Promise<CreatedResponse> {
-    const id = await this.contentService.create(contentDto, userId);
-
-    return { id };
+  ): Promise<ContentEntity> {
+    return this.contentService.create(contentDto, userId);
   }
 
   @ApiOperation({ summary: 'Get content by id' })
@@ -69,17 +66,20 @@ export class ContentController {
 
   @ApiOperation({ summary: 'Update content by id' })
   @ApiBearerAuth()
-  @ApiResponse({ status: 204, description: 'Successfully updated' })
+  @ApiResponse({
+    status: 204,
+    type: ContentEntity,
+    description: 'Successfully updated',
+  })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Content not found' })
   @UseGuards(OwnerGuard(ContentRepository, 'id'))
   @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updateContent(
     @Param('id', ParseIntPipe) contentId: number,
     @Body() contentDto: ContentDto,
-  ): Promise<void> {
-    await this.contentService.update(contentId, contentDto);
+  ): Promise<ContentEntity> {
+    return this.contentService.update(contentId, contentDto);
   }
 
   @ApiOperation({ summary: 'Delete content by id' })

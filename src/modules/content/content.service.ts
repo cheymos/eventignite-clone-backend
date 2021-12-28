@@ -8,11 +8,10 @@ import { ContentEntity } from './entities/content.entity';
 export class ContentService {
   constructor(private readonly contentRepository: ContentRepository) {}
 
-  async create({ type }: ContentDto, userId: string): Promise<number> {
+  async create({ type }: ContentDto, userId: string): Promise<ContentEntity> {
     const newContent = new ContentEntity(type, userId);
-    const { id } = await this.contentRepository.save(newContent);
 
-    return id;
+    return this.contentRepository.save(newContent);
   }
 
   async getOne(contentId: number): Promise<ContentEntity> {
@@ -21,11 +20,15 @@ export class ContentService {
     return content;
   }
 
-  async update(contentId: number, { type }: ContentDto): Promise<void> {
+  async update(
+    contentId: number,
+    { type }: ContentDto,
+  ): Promise<ContentEntity> {
     const content = await this.contentRepository.findOneById(contentId);
 
     Object.assign(content, { type });
-    this.contentRepository.update({ id: content.id }, content);
+
+    return this.contentRepository.save(content);
   }
 
   async delete(contentId: number): Promise<void> {
