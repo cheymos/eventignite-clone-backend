@@ -1,15 +1,16 @@
 import {
-    ImATeapotException,
-    Injectable,
-    NotFoundException
+  ImATeapotException,
+  Injectable,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-    CONTENT_PROPERTY_NOT_FOUND,
-    CONTENT_VARIANT_NOT_FOUND
+  CONTENT_PROPERTY_NOT_FOUND,
+  CONTENT_VARIANT_NOT_FOUND
 } from '../../common/constants/error.constants';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
+import { ContentRepository } from '../content/content.repository';
 import { ContentService } from '../content/content.service';
 import { ContentPropertyDto } from './dtos/content-property.dto';
 import { ContentPropertyEntity } from './entities/content-property.entity';
@@ -20,6 +21,7 @@ export class ContentPropertyService {
     @InjectRepository(ContentPropertyEntity)
     private readonly contentPropertyRepository: Repository<ContentPropertyEntity>,
     private readonly contentService: ContentService,
+    private readonly contentRepository: ContentRepository,
   ) {}
 
   async create(
@@ -121,7 +123,7 @@ export class ContentPropertyService {
     contentId: number,
     userId: string,
   ): Promise<void> {
-    const content = await this.contentService.findOne(contentId);
+    const content = await this.contentRepository.findOneById(contentId);
     this.contentService.checkAccess(content, userId);
   }
 }

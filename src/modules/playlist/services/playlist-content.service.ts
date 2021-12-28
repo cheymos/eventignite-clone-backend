@@ -1,12 +1,13 @@
 import {
-    Injectable,
-    NotFoundException,
-    UnprocessableEntityException
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PLAYLIST_CONTENT_NOT_FOUND } from '../../../common/constants/error.constants';
 import { PaginateResponse } from '../../../common/types/paginate-response.type';
+import { ContentRepository } from '../../content/content.repository';
 import { ContentService } from '../../content/content.service';
 import { PlaylistContentDto } from '../dtos/playlist-content.dto';
 import { PlaylistContentEntity } from '../entities/playlist-content.entity';
@@ -18,6 +19,7 @@ export class PlaylistContentService {
     @InjectRepository(PlaylistContentEntity)
     private readonly playlistContentRepository: Repository<PlaylistContentEntity>,
     private readonly contentService: ContentService,
+    private readonly contentRepositoy: ContentRepository,
     private readonly playlistService: PlaylistService,
   ) {}
 
@@ -30,7 +32,7 @@ export class PlaylistContentService {
     this.playlistService.checkAccess(playlist, userId);
 
     try {
-      const content = await this.contentService.findOne(contentId);
+      const content = await this.contentRepositoy.findOneById(contentId);
       this.contentService.checkAccess(content, userId);
 
       const newPlaylistContent = new PlaylistContentEntity(
