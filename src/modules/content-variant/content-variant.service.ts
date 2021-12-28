@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentRepository } from '../content/content.repository';
-import { ContentService } from '../content/content.service';
 import { FileService } from '../file/file.service';
 import { ContentVariantRepository } from './content-variant.repository';
 import { ContentVariantEntity } from './entities/content-variant.entity';
@@ -11,7 +10,6 @@ import { ContentVariantEntity } from './entities/content-variant.entity';
 export class ContentVariantService {
   constructor(
     private readonly contentVariantRepository: ContentVariantRepository,
-    private readonly contentService: ContentService,
     private readonly contentRepository: ContentRepository,
     private readonly fileService: FileService,
   ) {}
@@ -20,11 +18,7 @@ export class ContentVariantService {
     filename: string,
     dataBuffer: Buffer,
     contentId: number,
-    userId: string,
   ): Promise<ContentVariantEntity> {
-    const content = await this.contentRepository.findOneById(contentId);
-    this.contentService.checkAccess(content, userId);
-
     const file = await this.fileService.upload(dataBuffer, filename);
     const newContentVariant = new ContentVariantEntity(file, contentId);
 
@@ -34,10 +28,8 @@ export class ContentVariantService {
   async getOne(
     contentVariantId: number,
     contentId: number,
-    userId: string,
   ): Promise<ContentVariantEntity> {
     const content = await this.contentRepository.findOneById(contentId);
-    this.contentService.checkAccess(content, userId);
 
     const contentVariant = await this.contentVariantRepository.findOneById(
       contentVariantId,
@@ -51,12 +43,7 @@ export class ContentVariantService {
 
   async getAllVariants(
     contentId: number,
-    userId: string,
   ): Promise<PaginateResponse<ContentVariantEntity>> {
-    const content = await this.contentRepository.findOneById(contentId);
-
-    this.contentService.checkAccess(content, userId);
-
     const [data, total] = await this.contentVariantRepository.findAndCount({
       contentId,
     });
@@ -69,10 +56,8 @@ export class ContentVariantService {
     dataBuffer: Buffer,
     contentVariantId: number,
     contentId: number,
-    userId: string,
   ): Promise<void> {
     const content = await this.contentRepository.findOneById(contentId);
-    this.contentService.checkAccess(content, userId);
 
     const contentVariant = await this.contentVariantRepository.findOneById(
       contentVariantId,
@@ -90,13 +75,8 @@ export class ContentVariantService {
     );
   }
 
-  async delete(
-    contentVariantId: number,
-    contentId: number,
-    userId: string,
-  ): Promise<void> {
+  async delete(contentVariantId: number, contentId: number): Promise<void> {
     const content = await this.contentRepository.findOneById(contentId);
-    this.contentService.checkAccess(content, userId);
 
     const contentVariant = await this.contentVariantRepository.findOneById(
       contentVariantId,
