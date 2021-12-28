@@ -18,10 +18,12 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { User } from '../../../common/decorators/user.decorator';
+import { OwnerGuard } from '../../../common/guards/owner.guard';
 import { CreatedResponse } from '../../../common/types/created-response.type';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { PlaylistDto } from '../dtos/playlist.dto';
 import { PlaylistEntity } from '../entities/playlist.entity';
+import { PlaylistRepository } from '../repositories/playlist.repository';
 import { PlaylistService } from '../services/playlist.service';
 
 @Controller('playlists')
@@ -57,12 +59,12 @@ export class PlaylistController {
   })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Playlist not found' })
+  @UseGuards(OwnerGuard(PlaylistRepository, 'id'))
   @Get(':id')
   async getPlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
-    @User('sub') userId: string,
   ): Promise<PlaylistEntity> {
-    return this.playlistService.getOne(playlistId, userId);
+    return this.playlistService.getOne(playlistId);
   }
 
   @ApiOperation({ summary: 'Update playlist by id' })
@@ -70,14 +72,14 @@ export class PlaylistController {
   @ApiResponse({ status: 204, description: 'Successfully updated' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Playlist not found' })
+  @UseGuards(OwnerGuard(PlaylistRepository, 'id'))
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updatePlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
     @Body() playlistDto: PlaylistDto,
-    @User('sub') userId: string,
   ): Promise<void> {
-    await this.playlistService.update(playlistId, playlistDto, userId);
+    await this.playlistService.update(playlistId, playlistDto);
   }
 
   @ApiOperation({ summary: 'Delete playlist by id' })
@@ -85,12 +87,12 @@ export class PlaylistController {
   @ApiResponse({ status: 204, description: 'Successfully deleted' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Playlist not found' })
+  @UseGuards(OwnerGuard(PlaylistRepository, 'id'))
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
-    @User('sub') userId: string,
   ): Promise<void> {
-    await this.playlistService.delete(playlistId, userId);
+    await this.playlistService.delete(playlistId);
   }
 }

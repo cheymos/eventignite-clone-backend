@@ -19,17 +19,19 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { User } from '../../../common/decorators/user.decorator';
+import { OwnerGuard } from '../../../common/guards/owner.guard';
 import { CreatedResponse } from '../../../common/types/created-response.type';
 import { PaginateResponse } from '../../../common/types/paginate-response.type';
 import { getPaginateResponseOptions } from '../../../utils/get-paginate-response-options.util';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { PlaylistContentDto } from '../dtos/playlist-content.dto';
 import { PlaylistContentEntity } from '../entities/playlist-content.entity';
+import { PlaylistRepository } from '../repositories/playlist.repository';
 import { PlaylistContentService } from '../services/playlist-content.service';
 
 @Controller('playlists/:playlistId/contents')
 @ApiTags('Playlists')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, OwnerGuard(PlaylistRepository, 'playlistId'))
 export class PlaylistContentController {
   constructor(
     private readonly playlistContentService: PlaylistContentService,
@@ -68,11 +70,9 @@ export class PlaylistContentController {
   @Get()
   async getPlaylistWithAllContents(
     @Param('playlistId', ParseIntPipe) playlistId: number,
-    @User('sub') userId: string,
   ): Promise<PaginateResponse<PlaylistContentEntity>> {
     return await this.playlistContentService.getPlaylistWithAllContents(
       playlistId,
-      userId,
     );
   }
 
@@ -87,13 +87,11 @@ export class PlaylistContentController {
     @Body() playlistContentDto: PlaylistContentDto,
     @Param('playlistId', ParseIntPipe) playlistId: number,
     @Param('id', ParseIntPipe) playlistContentId: number,
-    @User('sub') userId: string,
   ): Promise<void> {
     await this.playlistContentService.updateFullRelationship(
       playlistContentDto,
       playlistId,
       playlistContentId,
-      userId,
     );
   }
 
@@ -105,14 +103,10 @@ export class PlaylistContentController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteContentFromPlaylist(
-    @Param('playlistId', ParseIntPipe) playlistId: number,
     @Param('id', ParseIntPipe) playlistContentId: number,
-    @User('sub') userId: string,
   ): Promise<void> {
     await this.playlistContentService.deleteContentFromPlaylist(
-      playlistId,
       playlistContentId,
-      userId,
     );
   }
 }

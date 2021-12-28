@@ -23,18 +23,19 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { FILE_NOT_ATTACHED } from '../../common/constants/error.constants';
-import { User } from '../../common/decorators/user.decorator';
+import { OwnerGuard } from '../../common/guards/owner.guard';
 import { ValueExistsPipe } from '../../common/pipes/value-exists.pipe';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { getPaginateResponseOptions } from '../../utils/get-paginate-response-options.util';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { ContentRepository } from '../content/content.repository';
 import { ContentVariantService } from './content-variant.service';
 import { ContentVariantEntity } from './entities/content-variant.entity';
 
 @Controller('contents/:contentId/variants')
 @ApiTags('Content variants')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, OwnerGuard(ContentRepository, 'contentId'))
 export class ContentVariantController {
   constructor(private readonly contentVariantService: ContentVariantService) {}
 
@@ -64,13 +65,11 @@ export class ContentVariantController {
     @UploadedFile(new ValueExistsPipe(FILE_NOT_ATTACHED))
     { filename, buffer }: Express.Multer.File,
     @Param('contentId', ParseIntPipe) contentId: number,
-    @User('sub') userId: string,
   ): Promise<CreatedResponse> {
     const { id } = await this.contentVariantService.create(
       filename,
       buffer,
       contentId,
-      userId,
     );
 
     return { id };
@@ -89,13 +88,8 @@ export class ContentVariantController {
   async getContentVariant(
     @Param('id', ParseIntPipe) contentVariantId: number,
     @Param('contentId', ParseIntPipe) contentId: number,
-    @User('sub') userId: string,
   ): Promise<ContentVariantEntity> {
-    return this.contentVariantService.getOne(
-      contentVariantId,
-      contentId,
-      userId,
-    );
+    return this.contentVariantService.getOne(contentVariantId, contentId);
   }
 
   @ApiOperation({ summary: 'Get all content variants' })
@@ -106,9 +100,8 @@ export class ContentVariantController {
   @Get()
   async getAllContentVariants(
     @Param('contentId', ParseIntPipe) contentId: number,
-    @User('sub') userId: string,
   ): Promise<PaginateResponse<ContentVariantEntity>> {
-    return this.contentVariantService.getAllVariants(contentId, userId);
+    return this.contentVariantService.getAllVariants(contentId);
   }
 
   @ApiOperation({ summary: 'Update content variant by id' })
@@ -123,14 +116,12 @@ export class ContentVariantController {
     @UploadedFile() { filename, buffer }: Express.Multer.File,
     @Param('id', ParseIntPipe) contentVariantId: number,
     @Param('contentId', ParseIntPipe) contentId: number,
-    @User('sub') userId: string,
   ): Promise<void> {
     await this.contentVariantService.update(
       filename,
       buffer,
       contentVariantId,
       contentId,
-      userId,
     );
   }
 
@@ -144,12 +135,7 @@ export class ContentVariantController {
   async deleteContentVariant(
     @Param('id', ParseIntPipe) contentVariantId: number,
     @Param('contentId', ParseIntPipe) contentId: number,
-    @User('sub') userId: string,
   ): Promise<void> {
-    await this.contentVariantService.delete(
-      contentVariantId,
-      contentId,
-      userId,
-    );
+    await this.contentVariantService.delete(contentVariantId, contentId);
   }
 }

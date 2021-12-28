@@ -15,30 +15,23 @@ export class ContentService {
     return id;
   }
 
-  async getOne(contentId: number, userId: string): Promise<ContentEntity> {
+  async getOne(contentId: number): Promise<ContentEntity> {
     const content = await this.contentRepository.findOneById(contentId);
-    this.checkAccess(content, userId);
 
     return content;
   }
 
-  async update(
-    contentId: number,
-    { type }: ContentDto,
-    userId: string,
-  ): Promise<void> {
+  async update(contentId: number, { type }: ContentDto): Promise<void> {
     const content = await this.contentRepository.findOneById(contentId);
-    this.checkAccess(content, userId);
 
-    const newContent = new ContentEntity(type, userId);
-    this.contentRepository.update({ id: content.id }, newContent);
+    Object.assign(content, { type });
+    this.contentRepository.update({ id: content.id }, content);
   }
 
-  async delete(contentId: number, userId: string): Promise<void> {
+  async delete(contentId: number): Promise<void> {
     const content = await this.contentRepository.findOneById(contentId);
-    this.checkAccess(content, userId);
 
-    await this.contentRepository.delete({ id: contentId });
+    await this.contentRepository.delete(content);
   }
 
   checkAccess(content: ContentEntity, userId: string): void {
