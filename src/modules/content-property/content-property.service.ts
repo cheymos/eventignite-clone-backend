@@ -24,12 +24,8 @@ export class ContentPropertyService {
 
   async create(
     { property, value }: ContentPropertyDto,
-    contentId: number,
     contentVariantId: number,
-    userId: string,
   ): Promise<ContentPropertyEntity> {
-    this.checkAccessToContent(contentId, userId);
-
     const newContentProperty = new ContentPropertyEntity(
       property,
       value,
@@ -51,11 +47,8 @@ export class ContentPropertyService {
   }
 
   async getAll(
-    contentId: number,
     contentVariantId: number,
-    userId: string,
   ): Promise<PaginateResponse<ContentPropertyEntity>> {
-    this.checkAccessToContent(contentId, userId);
 
     const [data, total] = await this.contentPropertyRepository.findAndCount({
       contentVariantId,
@@ -67,11 +60,8 @@ export class ContentPropertyService {
   async update(
     contentPropertyId: number,
     { property, value }: ContentPropertyDto,
-    contentId: number,
     contentVariantId: number,
-    userId: string,
   ): Promise<void> {
-    this.checkAccessToContent(contentId, userId);
 
     const contentProperty = await this.contentPropertyRepository.findOneById(
       contentPropertyId,
@@ -94,12 +84,8 @@ export class ContentPropertyService {
 
   async delete(
     contentPropertyId: number,
-    contentId: number,
     contentVariantId: number,
-    userId: string,
   ): Promise<void> {
-    this.checkAccessToContent(contentId, userId);
-
     const contentProperty = await this.contentPropertyRepository.findOneById(
       contentPropertyId,
     );
@@ -108,13 +94,5 @@ export class ContentPropertyService {
       throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
 
     await this.contentPropertyRepository.remove(contentProperty);
-  }
-
-  private async checkAccessToContent(
-    contentId: number,
-    userId: string,
-  ): Promise<void> {
-    const content = await this.contentRepository.findOneById(contentId);
-    this.contentService.checkAccess(content, userId);
   }
 }
