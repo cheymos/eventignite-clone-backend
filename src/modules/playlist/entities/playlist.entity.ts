@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
-  Entity, OneToOne,
+  Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
 import { ScreenEntity } from '../../screen/entities/screen.entity';
@@ -24,8 +26,12 @@ export class PlaylistEntity {
   @Column()
   ownerId: string;
 
-  @OneToOne(() => ScreenEntity, (screenEntity) => screenEntity.playlist)
-  screen?: ScreenEntity;
+  @ApiProperty()
+  @OneToOne(() => ScreenEntity, (screenEntity) => screenEntity.playlist, {
+    eager: true,
+  })
+  @JoinColumn()
+  screen: ScreenEntity;
 
   constructor(name: string, description: string, ownerId: string) {
     this.name = name;
