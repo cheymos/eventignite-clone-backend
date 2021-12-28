@@ -13,6 +13,7 @@ import {
 } from '../../common/constants/error.constants';
 import { EventRepository } from '../event/event.repository';
 import { EventService } from '../event/event.service';
+import { PlaylistRepository } from '../playlist/repositories/playlist.repository';
 import { PlaylistService } from '../playlist/services/playlist.service';
 import { ScreenDto } from './dtos/screen.dto';
 import { ScreenEntity } from './entities/screen.entity';
@@ -25,6 +26,7 @@ export class ScreenService {
     private readonly eventService: EventService,
     private readonly eventRepository: EventRepository,
     private readonly playlstService: PlaylistService,
+    private readonly playlistRepository: PlaylistRepository,
   ) {}
 
   async create(
@@ -33,9 +35,7 @@ export class ScreenService {
   ): Promise<number> {
     try {
       const event = await this.eventRepository.findOneById(eventId);
-      const playlist = await this.playlstService.findOne(playlistId, [
-        'screen',
-      ]);
+      const playlist = await this.playlistRepository.findOneById(playlistId);
 
       if (playlist.screen)
         throw new UnprocessableEntityException(PLAYLIST_IS_USED);
@@ -75,9 +75,7 @@ export class ScreenService {
       this.checkAccess(screen, userId);
 
       const event = await this.eventRepository.findOneById(eventId);
-      const playlist = await this.playlstService.findOne(playlistId, [
-        'screen',
-      ]);
+      const playlist = await this.playlistRepository.findOneById(playlistId);
 
       if (playlist.screen && playlist.screen.id !== screenId)
         throw new UnprocessableEntityException(PLAYLIST_IS_USED);

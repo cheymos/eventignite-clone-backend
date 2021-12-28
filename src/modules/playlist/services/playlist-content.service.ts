@@ -11,6 +11,7 @@ import { ContentRepository } from '../../content/content.repository';
 import { ContentService } from '../../content/content.service';
 import { PlaylistContentDto } from '../dtos/playlist-content.dto';
 import { PlaylistContentEntity } from '../entities/playlist-content.entity';
+import { PlaylistRepository } from '../repositories/playlist.repository';
 import { PlaylistService } from './playlist.service';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class PlaylistContentService {
     private readonly contentService: ContentService,
     private readonly contentRepositoy: ContentRepository,
     private readonly playlistService: PlaylistService,
+    private readonly playlistRepository: PlaylistRepository,
   ) {}
 
   async addContentToPlaylist(
@@ -28,7 +30,7 @@ export class PlaylistContentService {
     playlistId: number,
     userId: string,
   ): Promise<number> {
-    const playlist = await this.playlistService.findOne(playlistId);
+    const playlist = await this.playlistRepository.findOneById(playlistId);
     this.playlistService.checkAccess(playlist, userId);
 
     try {
@@ -55,7 +57,7 @@ export class PlaylistContentService {
     playlistId: number,
     userId: string,
   ): Promise<PaginateResponse<PlaylistContentEntity>> {
-    const playlist = await this.playlistService.findOne(playlistId);
+    const playlist = await this.playlistRepository.findOneById(playlistId);
     this.playlistService.checkAccess(playlist, userId);
 
     const [data, total] = await this.playlistContentRepository
@@ -74,7 +76,7 @@ export class PlaylistContentService {
     playlistContentId: number,
     userId: string,
   ): Promise<void> {
-    const playlist = await this.playlistService.findOne(playlistId);
+    const playlist = await this.playlistRepository.findOneById(playlistId);
     this.playlistService.checkAccess(playlist, userId);
 
     const playlistContent = await this.playlistContentRepository.findOne(
@@ -102,7 +104,7 @@ export class PlaylistContentService {
     playlistContentId: number,
     userId: string,
   ): Promise<void> {
-    const playlist = await this.playlistService.findOne(playlistId);
+    const playlist = await this.playlistRepository.findOneById(playlistId);
     this.playlistService.checkAccess(playlist, userId);
 
     const deleteResult = await this.playlistContentRepository.delete(
