@@ -11,6 +11,7 @@ import {
   PLAYLIST_IS_USED,
   SCREEN_NOT_FOUND
 } from '../../common/constants/error.constants';
+import { EventRepository } from '../event/event.repository';
 import { EventService } from '../event/event.service';
 import { PlaylistService } from '../playlist/services/playlist.service';
 import { ScreenDto } from './dtos/screen.dto';
@@ -22,6 +23,7 @@ export class ScreenService {
     @InjectRepository(ScreenEntity)
     private readonly screenRepository: Repository<ScreenEntity>,
     private readonly eventService: EventService,
+    private readonly eventRepository: EventRepository,
     private readonly playlstService: PlaylistService,
   ) {}
 
@@ -30,7 +32,7 @@ export class ScreenService {
     userId: string,
   ): Promise<number> {
     try {
-      const event = await this.eventService.findOne(eventId);
+      const event = await this.eventRepository.findOneById(eventId);
       const playlist = await this.playlstService.findOne(playlistId, [
         'screen',
       ]);
@@ -72,7 +74,7 @@ export class ScreenService {
       const screen = await this.findOne(screenId);
       this.checkAccess(screen, userId);
 
-      const event = await this.eventService.findOne(eventId);
+      const event = await this.eventRepository.findOneById(eventId);
       const playlist = await this.playlstService.findOne(playlistId, [
         'screen',
       ]);
