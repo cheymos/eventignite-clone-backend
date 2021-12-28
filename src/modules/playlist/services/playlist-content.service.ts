@@ -30,9 +30,6 @@ export class PlaylistContentService {
     playlistId: number,
     userId: string,
   ): Promise<number> {
-    const playlist = await this.playlistRepository.findOneById(playlistId);
-    this.playlistService.checkAccess(playlist, userId);
-
     try {
       const content = await this.contentRepositoy.findOneById(contentId);
       this.contentService.checkAccess(content, userId);
@@ -55,11 +52,7 @@ export class PlaylistContentService {
 
   async getPlaylistWithAllContents(
     playlistId: number,
-    userId: string,
   ): Promise<PaginateResponse<PlaylistContentEntity>> {
-    const playlist = await this.playlistRepository.findOneById(playlistId);
-    this.playlistService.checkAccess(playlist, userId);
-
     const [data, total] = await this.playlistContentRepository
       .createQueryBuilder('pc')
       .select(['pc.id', 'pc.content', 'pc.pos', 'pc.duration'])
@@ -74,11 +67,8 @@ export class PlaylistContentService {
     { contentId, pos, duration }: PlaylistContentDto,
     playlistId: number,
     playlistContentId: number,
-    userId: string,
   ): Promise<void> {
-    const playlist = await this.playlistRepository.findOneById(playlistId);
-    this.playlistService.checkAccess(playlist, userId);
-
+    // TODO: simplify
     const playlistContent = await this.playlistContentRepository.findOne(
       playlistContentId,
     );
@@ -100,13 +90,8 @@ export class PlaylistContentService {
   }
 
   async deleteContentFromPlaylist(
-    playlistId: number,
     playlistContentId: number,
-    userId: string,
   ): Promise<void> {
-    const playlist = await this.playlistRepository.findOneById(playlistId);
-    this.playlistService.checkAccess(playlist, userId);
-
     const deleteResult = await this.playlistContentRepository.delete(
       playlistContentId,
     );
