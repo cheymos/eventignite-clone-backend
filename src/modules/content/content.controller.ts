@@ -18,8 +18,10 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { User } from '../../common/decorators/user.decorator';
+import { OwnerGuard } from '../../common/guards/owner.guard';
 import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { ContentRepository } from './content.repository';
 import { ContentService } from './content.service';
 import { ContentDto } from './dtos/content.dto';
 import { ContentEntity } from './entities/content.entity';
@@ -57,12 +59,12 @@ export class ContentController {
   })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Content not found' })
+  @UseGuards(OwnerGuard(ContentRepository, 'id'))
   @Get(':id')
   async getContent(
     @Param('id', ParseIntPipe) contentId: number,
-    @User('sub') userId: string,
   ): Promise<ContentEntity> {
-    return this.contentService.getOne(contentId, userId);
+    return this.contentService.getOne(contentId);
   }
 
   @ApiOperation({ summary: 'Update content by id' })
@@ -70,14 +72,14 @@ export class ContentController {
   @ApiResponse({ status: 204, description: 'Successfully updated' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Content not found' })
+  @UseGuards(OwnerGuard(ContentRepository, 'id'))
   @Put(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateContent(
     @Param('id', ParseIntPipe) contentId: number,
     @Body() contentDto: ContentDto,
-    @User('sub') userId: string,
   ): Promise<void> {
-    await this.contentService.update(contentId, contentDto, userId);
+    await this.contentService.update(contentId, contentDto);
   }
 
   @ApiOperation({ summary: 'Delete content by id' })
@@ -85,12 +87,12 @@ export class ContentController {
   @ApiResponse({ status: 204, description: 'Successfully deleted' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Content not found' })
+  @UseGuards(OwnerGuard(ContentRepository, 'id'))
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteContent(
     @Param('id', ParseIntPipe) contentId: number,
-    @User('sub') userId: string,
   ): Promise<void> {
-    await this.contentService.delete(contentId, userId);
+    await this.contentService.delete(contentId);
   }
 }
