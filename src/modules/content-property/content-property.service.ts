@@ -3,8 +3,6 @@ import {
   Injectable,
   NotFoundException
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import {
   CONTENT_PROPERTY_NOT_FOUND,
   CONTENT_VARIANT_NOT_FOUND
@@ -12,14 +10,14 @@ import {
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentRepository } from '../content/content.repository';
 import { ContentService } from '../content/content.service';
+import { ContentPropertyRepository } from './contnet-property.repository';
 import { ContentPropertyDto } from './dtos/content-property.dto';
 import { ContentPropertyEntity } from './entities/content-property.entity';
 
 @Injectable()
 export class ContentPropertyService {
   constructor(
-    @InjectRepository(ContentPropertyEntity)
-    private readonly contentPropertyRepository: Repository<ContentPropertyEntity>,
+    private readonly contentPropertyRepository: ContentPropertyRepository,
     private readonly contentService: ContentService,
     private readonly contentRepository: ContentRepository,
   ) {}
@@ -75,7 +73,9 @@ export class ContentPropertyService {
   ): Promise<void> {
     this.checkAccessToContent(contentId, userId);
 
-    const contentProperty = await this.findOne(contentPropertyId);
+    const contentProperty = await this.contentPropertyRepository.findOneById(
+      contentPropertyId,
+    );
 
     if (contentProperty.contentVariantId !== contentVariantId)
       throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
@@ -100,23 +100,14 @@ export class ContentPropertyService {
   ): Promise<void> {
     this.checkAccessToContent(contentId, userId);
 
-    const contentProperty = await this.findOne(contentPropertyId);
+    const contentProperty = await this.contentPropertyRepository.findOneById(
+      contentPropertyId,
+    );
 
     if (contentProperty.contentVariantId !== contentVariantId)
       throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
 
     await this.contentPropertyRepository.remove(contentProperty);
-  }
-
-  async findOne(contentPropertyId: number): Promise<ContentPropertyEntity> {
-    const contentProperty = await this.contentPropertyRepository.findOne(
-      contentPropertyId,
-    );
-
-    if (!contentProperty)
-      throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
-
-    return contentProperty;
   }
 
   private async checkAccessToContent(
