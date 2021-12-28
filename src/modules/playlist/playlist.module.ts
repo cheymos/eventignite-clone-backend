@@ -5,16 +5,21 @@ import { PlaylistContentController } from './controllers/playlist-content.contro
 import { PlaylistController } from './controllers/playlist.controller';
 import { PlaylistContentEntity } from './entities/playlist-content.entity';
 import { PlaylistEntity } from './entities/playlist.entity';
+import { PlaylistRepository } from './repositories/playlist.repository';
 import { PlaylistContentService } from './services/playlist-content.service';
 import { PlaylistService } from './services/playlist.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PlaylistEntity, PlaylistContentEntity]),
+    TypeOrmModule.forFeature([
+      PlaylistEntity,
+      PlaylistContentEntity,
+      PlaylistRepository,
+    ]),
     ContentModule,
   ],
   providers: [PlaylistService, PlaylistContentService],
-  exports: [PlaylistService],
+  exports: [PlaylistService, TypeOrmModule.forFeature([PlaylistRepository])],
   controllers: [PlaylistController, PlaylistContentController],
 })
 export class PlaylistModule {}
