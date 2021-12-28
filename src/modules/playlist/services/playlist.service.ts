@@ -1,10 +1,5 @@
-import {
-  ForbiddenException,
-  Injectable
-} from '@nestjs/common';
-import {
-  NO_ACCESS_PLAYLIST
-} from '../../../common/constants/error.constants';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { NO_ACCESS_PLAYLIST } from '../../../common/constants/error.constants';
 import { PlaylistDto } from '../dtos/playlist.dto';
 import { PlaylistEntity } from '../entities/playlist.entity';
 import { PlaylistRepository } from '../repositories/playlist.repository';
@@ -23,9 +18,8 @@ export class PlaylistService {
     return playlist.id;
   }
 
-  async getOne(playlistId: number, userId: string): Promise<PlaylistEntity> {
+  async getOne(playlistId: number): Promise<PlaylistEntity> {
     const playlist = await this.playlistRepository.findOneById(playlistId);
-    this.checkAccess(playlist, userId);
 
     return playlist;
   }
@@ -33,20 +27,17 @@ export class PlaylistService {
   async update(
     playlistId: number,
     { name, description }: PlaylistDto,
-    userId: string,
   ): Promise<void> {
     const playlist = await this.playlistRepository.findOneById(playlistId);
-    this.checkAccess(playlist, userId);
 
-    const newPlaylist = new PlaylistEntity(name, description, userId);
+    const newPlaylist = new PlaylistEntity(name, description, playlist.ownerId);
     this.playlistRepository.update({ id: playlist.id }, newPlaylist);
   }
 
-  async delete(playlistId: number, userId: string): Promise<void> {
+  async delete(playlistId: number): Promise<void> {
     const playlist = await this.playlistRepository.findOneById(playlistId);
-    this.checkAccess(playlist, userId);
 
-    await this.playlistRepository.delete({ id: playlistId });
+    await this.playlistRepository.delete(playlist);
   }
 
   checkAccess(playlist: PlaylistEntity, userId: string): void {
