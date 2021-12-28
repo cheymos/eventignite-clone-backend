@@ -18,9 +18,8 @@ export class EventService {
     return createdEvent.id;
   }
 
-  async getOne(eventId: number, userId: string): Promise<EventEntity> {
+  async getOne(eventId: number): Promise<EventEntity> {
     const event = await this.eventRepository.findOneById(eventId);
-    this.checkAccess(event, userId);
 
     return event;
   }
@@ -28,19 +27,14 @@ export class EventService {
   async update(
     eventId: number,
     { name, description }: EventDto,
-    userId: string,
   ): Promise<void> {
     const event = await this.eventRepository.findOneById(eventId);
-    this.checkAccess(event, userId);
 
-    const newEvent = new EventEntity(name, description, userId);
+    const newEvent = new EventEntity(name, description, event.ownerId);
     this.eventRepository.update({ id: event.id }, newEvent);
   }
 
-  async delete(eventId: number, userId: string): Promise<void> {
-    const event = await this.eventRepository.findOneById(eventId);
-    this.checkAccess(event, userId);
-
+  async delete(eventId: number): Promise<void> {
     await this.eventRepository.delete({ id: eventId });
   }
 
