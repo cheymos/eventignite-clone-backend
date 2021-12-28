@@ -1,18 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentRepository } from '../content/content.repository';
 import { ContentService } from '../content/content.service';
 import { FileService } from '../file/file.service';
+import { ContentVariantRepository } from './content-variant.repository';
 import { ContentVariantEntity } from './entities/content-variant.entity';
 
 @Injectable()
 export class ContentVariantService {
   constructor(
     @InjectRepository(ContentVariantEntity)
-    private readonly contentVariantRepository: Repository<ContentVariantEntity>,
+    private readonly contentVariantRepository: ContentVariantRepository,
     private readonly contentService: ContentService,
     private readonly contentRepository: ContentRepository,
     private readonly fileService: FileService,
@@ -41,7 +41,9 @@ export class ContentVariantService {
     const content = await this.contentRepository.findOneById(contentId);
     this.contentService.checkAccess(content, userId);
 
-    const contentVariant = await this.findOne(contentVariantId);
+    const contentVariant = await this.contentVariantRepository.findOneById(
+      contentVariantId,
+    );
 
     if (contentVariant.contentId !== content.id)
       throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
@@ -74,7 +76,9 @@ export class ContentVariantService {
     const content = await this.contentRepository.findOneById(contentId);
     this.contentService.checkAccess(content, userId);
 
-    const contentVariant = await this.findOne(contentVariantId);
+    const contentVariant = await this.contentVariantRepository.findOneById(
+      contentVariantId,
+    );
 
     if (contentVariant.contentId !== content.id)
       throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
@@ -96,21 +100,13 @@ export class ContentVariantService {
     const content = await this.contentRepository.findOneById(contentId);
     this.contentService.checkAccess(content, userId);
 
-    const contentVariant = await this.findOne(contentVariantId);
+    const contentVariant = await this.contentVariantRepository.findOneById(
+      contentVariantId,
+    );
 
     if (contentVariant.contentId !== content.id)
       throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
 
     await this.contentVariantRepository.remove(contentVariant);
-  }
-
-  async findOne(contentVariantId: number): Promise<ContentVariantEntity> {
-    const contentVariant = await this.contentVariantRepository.findOne(
-      contentVariantId,
-    );
-
-    if (!contentVariant) throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
-
-    return contentVariant;
   }
 }
