@@ -1,23 +1,12 @@
-import {
-    ForbiddenException,
-    Injectable,
-    NotFoundException
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import {
-    EVENT_NOT_FOUND,
-    NO_ACCESS_EVENT
-} from '../../common/constants/error.constants';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { NO_ACCESS_EVENT } from '../../common/constants/error.constants';
 import { EventDto } from './dtos/event.dto';
 import { EventEntity } from './entities/event.entity';
+import { EventRepository } from './event.repository';
 
 @Injectable()
 export class EventService {
-  constructor(
-    @InjectRepository(EventEntity)
-    private readonly eventRepository: Repository<EventEntity>,
-  ) {}
+  constructor(private readonly eventRepository: EventRepository) {}
 
   async create(
     { name, description }: EventDto,
@@ -30,7 +19,7 @@ export class EventService {
   }
 
   async getOne(eventId: number, userId: string): Promise<EventEntity> {
-    const event = await this.findOne(eventId);
+    const event = await this.eventRepository.findOneById(eventId);
     this.checkAccess(event, userId);
 
     return event;
@@ -41,7 +30,7 @@ export class EventService {
     { name, description }: EventDto,
     userId: string,
   ): Promise<void> {
-    const event = await this.findOne(eventId);
+    const event = await this.eventRepository.findOneById(eventId);
     this.checkAccess(event, userId);
 
     const newEvent = new EventEntity(name, description, userId);
@@ -49,7 +38,7 @@ export class EventService {
   }
 
   async delete(eventId: number, userId: string): Promise<void> {
-    const event = await this.findOne(eventId);
+    const event = await this.eventRepository.findOneById(eventId);
     this.checkAccess(event, userId);
 
     await this.eventRepository.delete({ id: eventId });
@@ -59,13 +48,5 @@ export class EventService {
     const isAllow = event.ownerId === userId;
 
     if (!isAllow) throw new ForbiddenException(NO_ACCESS_EVENT);
-  }
-
-  async findOne(eventId: number): Promise<EventEntity> {
-    const event = await this.eventRepository.findOne(eventId);
-
-    if (!event) throw new NotFoundException(EVENT_NOT_FOUND);
-
-    return event;
   }
 }

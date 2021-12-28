@@ -1,23 +1,12 @@
-import {
-    ForbiddenException,
-    Injectable,
-    NotFoundException
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import {
-    CONTENT_NOT_FOUND,
-    NO_ACCESS_CONTENT
-} from '../../common/constants/error.constants';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { NO_ACCESS_CONTENT } from '../../common/constants/error.constants';
+import { ContentRepository } from './content.repository';
 import { ContentDto } from './dtos/content.dto';
 import { ContentEntity } from './entities/content.entity';
 
 @Injectable()
 export class ContentService {
-  constructor(
-    @InjectRepository(ContentEntity)
-    private readonly contentRepository: Repository<ContentEntity>,
-  ) {}
+  constructor(private readonly contentRepository: ContentRepository) {}
 
   async create({ type }: ContentDto, userId: string): Promise<number> {
     const newContent = new ContentEntity(type, userId);
@@ -27,7 +16,7 @@ export class ContentService {
   }
 
   async getOne(contentId: number, userId: string): Promise<ContentEntity> {
-    const content = await this.findOne(contentId);
+    const content = await this.contentRepository.findOneById(contentId);
     this.checkAccess(content, userId);
 
     return content;
@@ -38,7 +27,7 @@ export class ContentService {
     { type }: ContentDto,
     userId: string,
   ): Promise<void> {
-    const content = await this.findOne(contentId);
+    const content = await this.contentRepository.findOneById(contentId);
     this.checkAccess(content, userId);
 
     const newContent = new ContentEntity(type, userId);
@@ -46,7 +35,7 @@ export class ContentService {
   }
 
   async delete(contentId: number, userId: string): Promise<void> {
-    const content = await this.findOne(contentId);
+    const content = await this.contentRepository.findOneById(contentId);
     this.checkAccess(content, userId);
 
     await this.contentRepository.delete({ id: contentId });
@@ -56,13 +45,5 @@ export class ContentService {
     const isAllow = content.ownerId === userId;
 
     if (!isAllow) throw new ForbiddenException(NO_ACCESS_CONTENT);
-  }
-
-  async findOne(contentId: number): Promise<ContentEntity> {
-    const content = await this.contentRepository.findOne(contentId);
-
-    if (!content) throw new NotFoundException(CONTENT_NOT_FOUND);
-
-    return content;
   }
 }
