@@ -5,11 +5,10 @@ import { FileModule } from '../file/file.module';
 import { ContentVariantController } from './content-variant.controller';
 import { ContentVariantRepository } from './content-variant.repository';
 import { ContentVariantService } from './content-variant.service';
-import { ContentVariantEntity } from './entities/content-variant.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ContentVariantEntity, ContentVariantRepository]),
+    TypeOrmModule.forFeature([ContentVariantRepository]),
     ContentModule,
     FileModule,
   ],

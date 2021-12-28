@@ -1,5 +1,4 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { NO_ACCESS_EVENT } from '../../common/constants/error.constants';
 import { EventDto } from './dtos/event.dto';
 import { EventEntity } from './entities/event.entity';
@@ -7,10 +6,7 @@ import { EventRepository } from './event.repository';
 
 @Injectable()
 export class EventService {
-  constructor(
-    @InjectRepository(EventEntity)
-    private readonly eventRepository: EventRepository,
-  ) {}
+  constructor(private readonly eventRepository: EventRepository) {}
 
   async create(
     { name, description }: EventDto,

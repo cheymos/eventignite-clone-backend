@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { ContentRepository } from '../content/content.repository';
@@ -11,7 +10,6 @@ import { ContentVariantEntity } from './entities/content-variant.entity';
 @Injectable()
 export class ContentVariantService {
   constructor(
-    @InjectRepository(ContentVariantEntity)
     private readonly contentVariantRepository: ContentVariantRepository,
     private readonly contentService: ContentService,
     private readonly contentRepository: ContentRepository,
