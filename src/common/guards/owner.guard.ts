@@ -1,4 +1,10 @@
-import { CanActivate, ExecutionContext, mixin, Type } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  mixin,
+  NotFoundException,
+  Type
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { Repository } from 'typeorm';
@@ -8,7 +14,6 @@ export function OwnerGuard(
   entity: EntityClassOrSchema,
   paramName: string,
 ): Type<CanActivate> {
-
   class MixinOwnerGuard implements CanActivate {
     constructor(
       @InjectRepository(entity)
@@ -27,6 +32,8 @@ export function OwnerGuard(
 
     async checkAccess(resourceId: number, userId: string): Promise<boolean> {
       const resouce = await this.repository.findOne(resourceId);
+
+      if (!resouce) throw new NotFoundException();
 
       return resouce?.ownerId === userId;
     }
