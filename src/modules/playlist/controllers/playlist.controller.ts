@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { User } from '../../../common/decorators/user.decorator';
 import { OwnerGuard } from '../../../common/guards/owner.guard';
-import { CreatedResponse } from '../../../common/types/created-response.type';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { PlaylistDto } from '../dtos/playlist.dto';
 import { PlaylistEntity } from '../entities/playlist.entity';
@@ -36,7 +35,7 @@ export class PlaylistController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
-    type: CreatedResponse,
+    type: PlaylistEntity,
     description: 'Successfully created',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -44,10 +43,8 @@ export class PlaylistController {
   async createPlaylist(
     @Body() playlistDto: PlaylistDto,
     @User('sub') userId: string,
-  ): Promise<CreatedResponse> {
-    const id = await this.playlistService.create(playlistDto, userId);
-
-    return { id };
+  ): Promise<PlaylistEntity> {
+    return this.playlistService.create(playlistDto, userId);
   }
 
   @ApiOperation({ summary: 'Get playlist by id' })
@@ -74,12 +71,11 @@ export class PlaylistController {
   @ApiResponse({ status: 404, description: 'Playlist not found' })
   @UseGuards(OwnerGuard(PlaylistRepository, 'id'))
   @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updatePlaylist(
     @Param('id', ParseIntPipe) playlistId: number,
     @Body() playlistDto: PlaylistDto,
-  ): Promise<void> {
-    await this.playlistService.update(playlistId, playlistDto);
+  ): Promise<PlaylistEntity> {
+    return this.playlistService.update(playlistId, playlistDto);
   }
 
   @ApiOperation({ summary: 'Delete playlist by id' })
