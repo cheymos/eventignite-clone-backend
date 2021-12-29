@@ -3,9 +3,9 @@ import ormConfig from './orm.config';
 
 const ormSeedConfig: TypeOrmModuleOptions = {
   ...ormConfig,
-  migrations: ['src/seeds/**/*{.ts,.js}'],
+  migrations: ['src/database/seeds/**/*{.ts,.js}'],
   cli: {
-    migrationsDir: 'src/seeds',
+    migrationsDir: 'src/database/seeds',
   },
 };
 

@@ -9,9 +9,9 @@ export const getOrmConfig = (): TypeOrmModuleOptions => ({
   password: process.env.TYPEORM_PASSWORD,
   entities: [__dirname + '/../modules/**/*.entity{.ts,.js}'],
   synchronize: false,
-  migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
+  migrations: [__dirname + '/../database/migrations/**/*{.ts,.js}'],
   cli: {
-    migrationsDir: 'src/migrations',
+    migrationsDir: 'src/database/migrations',
   },
 });
 
