@@ -30,8 +30,8 @@ export class ScreenService {
     userId: string,
   ): Promise<number> {
     try {
-      const event = await this.eventRepository.findOneById(eventId);
-      const playlist = await this.playlistRepository.findOneById(playlistId);
+      const event = await this.eventRepository.findOneOrException(eventId);
+      const playlist = await this.playlistRepository.findOneOrException(playlistId);
 
       if (playlist.screen)
         throw new UnprocessableEntityException(PLAYLIST_IS_USED);
@@ -55,7 +55,7 @@ export class ScreenService {
   }
 
   async getOne(screenId: number, userId: string): Promise<ScreenEntity> {
-    const screen = await this.screenRepository.findOneById(screenId);
+    const screen = await this.screenRepository.findOneOrException(screenId);
     this.checkAccess(screen, userId);
 
     return screen;
@@ -67,11 +67,11 @@ export class ScreenService {
     userId: string,
   ): Promise<void> {
     try {
-      const screen = await this.screenRepository.findOneById(screenId);
+      const screen = await this.screenRepository.findOneOrException(screenId);
       this.checkAccess(screen, userId);
 
-      const event = await this.eventRepository.findOneById(eventId);
-      const playlist = await this.playlistRepository.findOneById(playlistId);
+      const event = await this.eventRepository.findOneOrException(eventId);
+      const playlist = await this.playlistRepository.findOneOrException(playlistId);
 
       if (playlist.screen && playlist.screen.id !== screenId)
         throw new UnprocessableEntityException(PLAYLIST_IS_USED);
@@ -93,7 +93,7 @@ export class ScreenService {
   }
 
   async delete(screenId: number, userId: string): Promise<void> {
-    const screen = await this.screenRepository.findOneById(screenId);
+    const screen = await this.screenRepository.findOneOrException(screenId);
     this.checkAccess(screen, userId);
 
     await this.screenRepository.delete({ id: screenId });

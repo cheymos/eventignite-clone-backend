@@ -31,7 +31,7 @@ export class PlaylistContentService {
     userId: string,
   ): Promise<number> {
     try {
-      const content = await this.contentRepositoy.findOneById(contentId);
+      const content = await this.contentRepositoy.findOneOrException(contentId);
       this.contentService.checkAccess(content, userId);
 
       const newPlaylistContent = new PlaylistContentEntity(

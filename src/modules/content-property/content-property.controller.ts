@@ -18,7 +18,6 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { OwnerGuard } from '../../common/guards/owner.guard';
-import { CreatedResponse } from '../../common/types/created-response.type';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { ContentRepository } from '../content/content.repository';
@@ -38,7 +37,7 @@ export class ContentPropertyController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
-    type: CreatedResponse,
+    type: ContentPropertyEntity,
     description: 'Successfully created',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -46,13 +45,11 @@ export class ContentPropertyController {
   async createContentVariantProperty(
     @Body() contentPropertyDto: ContentPropertyDto,
     @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
-  ): Promise<CreatedResponse> {
-    const { id } = await this.contentPropertyService.create(
+  ): Promise<ContentPropertyEntity> {
+    return this.contentPropertyService.create(
       contentPropertyDto,
       contentVariantId,
     );
-
-    return { id };
   }
 
   @ApiOperation({ summary: 'Get all properties of content variant' })
@@ -73,17 +70,20 @@ export class ContentPropertyController {
 
   @ApiOperation({ summary: 'Update content property by id' })
   @ApiBearerAuth()
-  @ApiResponse({ status: 204, description: 'Successfully updated' })
+  @ApiResponse({
+    status: 200,
+    type: ContentPropertyEntity,
+    description: 'Successfully updated',
+  })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Property not found' })
   @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updateProperty(
     @Body() contentPropertyDto: ContentPropertyDto,
     @Param('id', ParseIntPipe) contentPropertyId: number,
     @Param('contentVariantId', ParseIntPipe) contentVariantId: number,
-  ): Promise<void> {
-    await this.contentPropertyService.update(
+  ): Promise<ContentPropertyEntity> {
+    return this.contentPropertyService.update(
       contentPropertyId,
       contentPropertyDto,
       contentVariantId,

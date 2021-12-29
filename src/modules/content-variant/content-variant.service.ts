@@ -29,9 +29,9 @@ export class ContentVariantService {
     contentVariantId: number,
     contentId: number,
   ): Promise<ContentVariantEntity> {
-    const content = await this.contentRepository.findOneById(contentId);
+    const content = await this.contentRepository.findOneOrException(contentId);
 
-    const contentVariant = await this.contentVariantRepository.findOneById(
+    const contentVariant = await this.contentVariantRepository.findOneOrException(
       contentVariantId,
     );
 
@@ -57,9 +57,9 @@ export class ContentVariantService {
     contentVariantId: number,
     contentId: number,
   ): Promise<void> {
-    const content = await this.contentRepository.findOneById(contentId);
+    const content = await this.contentRepository.findOneOrException(contentId);
 
-    const contentVariant = await this.contentVariantRepository.findOneById(
+    const contentVariant = await this.contentVariantRepository.findOneOrException(
       contentVariantId,
     );
 
@@ -76,9 +76,9 @@ export class ContentVariantService {
   }
 
   async delete(contentVariantId: number, contentId: number): Promise<void> {
-    const content = await this.contentRepository.findOneById(contentId);
+    const content = await this.contentRepository.findOneOrException(contentId);
 
-    const contentVariant = await this.contentVariantRepository.findOneById(
+    const contentVariant = await this.contentVariantRepository.findOneOrException(
       contentVariantId,
     );
 

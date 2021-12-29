@@ -19,7 +19,7 @@ export class EventService {
   }
 
   async getOne(eventId: number): Promise<EventEntity> {
-    const event = await this.eventRepository.findOneById(eventId);
+    const event = await this.eventRepository.findOneOrException(eventId);
 
     return event;
   }
@@ -28,7 +28,7 @@ export class EventService {
     eventId: number,
     { name, description }: EventDto,
   ): Promise<void> {
-    const event = await this.eventRepository.findOneById(eventId);
+    const event = await this.eventRepository.findOneOrException(eventId);
 
     const newEvent = new EventEntity(name, description, event.ownerId);
     this.eventRepository.update({ id: event.id }, newEvent);

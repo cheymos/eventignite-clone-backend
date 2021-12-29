@@ -15,7 +15,7 @@ export class ContentService {
   }
 
   async getOne(contentId: number): Promise<ContentEntity> {
-    const content = await this.contentRepository.findOneById(contentId);
+    const content = await this.contentRepository.findOneOrException(contentId);
 
     return content;
   }
@@ -24,7 +24,7 @@ export class ContentService {
     contentId: number,
     { type }: ContentDto,
   ): Promise<ContentEntity> {
-    const content = await this.contentRepository.findOneById(contentId);
+    const content = await this.contentRepository.findOneOrException(contentId);
 
     Object.assign(content, { type });
 
@@ -32,7 +32,7 @@ export class ContentService {
   }
 
   async delete(contentId: number): Promise<void> {
-    const content = await this.contentRepository.findOneById(contentId);
+    const content = await this.contentRepository.findOneOrException(contentId);
 
     await this.contentRepository.delete(content);
   }

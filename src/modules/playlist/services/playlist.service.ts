@@ -19,7 +19,7 @@ export class PlaylistService {
   }
 
   async getOne(playlistId: number): Promise<PlaylistEntity> {
-    const playlist = await this.playlistRepository.findOneById(playlistId);
+    const playlist = await this.playlistRepository.findOneOrException(playlistId);
 
     return playlist;
   }
@@ -28,14 +28,14 @@ export class PlaylistService {
     playlistId: number,
     { name, description }: PlaylistDto,
   ): Promise<void> {
-    const playlist = await this.playlistRepository.findOneById(playlistId);
+    const playlist = await this.playlistRepository.findOneOrException(playlistId);
 
     const newPlaylist = new PlaylistEntity(name, description, playlist.ownerId);
     this.playlistRepository.update({ id: playlist.id }, newPlaylist);
   }
 
   async delete(playlistId: number): Promise<void> {
-    const playlist = await this.playlistRepository.findOneById(playlistId);
+    const playlist = await this.playlistRepository.findOneOrException(playlistId);
 
     await this.playlistRepository.delete(playlist);
   }
