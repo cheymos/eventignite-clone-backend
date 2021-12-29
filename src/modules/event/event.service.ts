@@ -11,11 +11,9 @@ export class EventService {
   async create(
     { name, description }: EventDto,
     userId: string,
-  ): Promise<number> {
+  ): Promise<EventEntity> {
     const event = new EventEntity(name, description, userId);
-    const createdEvent = await this.eventRepository.save(event);
-
-    return createdEvent.id;
+    return this.eventRepository.save(event);
   }
 
   async getOne(eventId: number): Promise<EventEntity> {
@@ -27,11 +25,14 @@ export class EventService {
   async update(
     eventId: number,
     { name, description }: EventDto,
-  ): Promise<void> {
+  ): Promise<EventEntity> {
     const event = await this.eventRepository.findOneOrException(eventId);
 
     const newEvent = new EventEntity(name, description, event.ownerId);
-    this.eventRepository.update({ id: event.id }, newEvent);
+
+    Object.assign(event, newEvent);
+
+    return this.eventRepository.save(event);
   }
 
   async delete(eventId: number): Promise<void> {

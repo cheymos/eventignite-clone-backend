@@ -19,7 +19,6 @@ import {
 } from '@nestjs/swagger';
 import { User } from '../../common/decorators/user.decorator';
 import { OwnerGuard } from '../../common/guards/owner.guard';
-import { CreatedResponse } from '../../common/types/created-response.type';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { EventDto } from './dtos/event.dto';
 import { EventEntity } from './entities/event.entity';
@@ -36,7 +35,7 @@ export class EventController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
-    type: CreatedResponse,
+    type: EventEntity,
     description: 'Successfully created',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -44,10 +43,8 @@ export class EventController {
   async createEvent(
     @Body() eventDto: EventDto,
     @User('sub') userId: string,
-  ): Promise<CreatedResponse> {
-    const id = await this.eventService.create(eventDto, userId);
-
-    return { id };
+  ): Promise<EventEntity> {
+    return this.eventService.create(eventDto, userId);
   }
 
   @ApiOperation({ summary: 'Get event by id' })
@@ -74,12 +71,11 @@ export class EventController {
   @ApiResponse({ status: 404, description: 'Event not found' })
   @UseGuards(OwnerGuard(EventRepository, 'id'))
   @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updateEvent(
     @Param('id', ParseIntPipe) eventId: number,
     @Body() eventDto: EventDto,
-  ): Promise<void> {
-    await this.eventService.update(eventId, eventDto);
+  ): Promise<EventEntity> {
+    return this.eventService.update(eventId, eventDto);
   }
 
   @ApiOperation({ summary: 'Delete event by id' })
