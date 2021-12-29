@@ -18,10 +18,13 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { User } from '../../common/decorators/user.decorator';
-import { CreatedResponse } from '../../common/types/created-response.type';
+import { OwnerGuard } from '../../common/guards/owner.guard';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { EventBodyOwnerGuard } from '../event/guards/event-body-owner.guard';
+import { PlaylistBodyOwnerGuard } from '../playlist/guards/playlist-body-owner.guard';
 import { ScreenDto } from './dtos/screen.dto';
 import { ScreenEntity } from './entities/screen.entity';
+import { ScreenRepository } from './screen.repository';
 import { ScreenService } from './screen.service';
 
 @Controller('screens')
@@ -34,18 +37,17 @@ export class ScreenController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
-    type: CreatedResponse,
+    type: ScreenEntity,
     description: 'Successfully created',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(EventBodyOwnerGuard, PlaylistBodyOwnerGuard)
   @Post()
   async createScreen(
     @Body() screenDto: ScreenDto,
     @User('sub') userId: string,
-  ): Promise<CreatedResponse> {
-    const id = await this.screenService.create(screenDto, userId);
-
-    return { id };
+  ): Promise<ScreenEntity> {
+    return this.screenService.create(screenDto, userId);
   }
 
   @ApiOperation({ summary: 'Get screen by id' })
@@ -57,12 +59,12 @@ export class ScreenController {
   })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Screen not found' })
+  @UseGuards(OwnerGuard(ScreenRepository, 'id'))
   @Get(':id')
   async getScreen(
     @Param('id', ParseIntPipe) screenId: number,
-    @User('sub') userId: string,
   ): Promise<ScreenEntity> {
-    return this.screenService.getOne(screenId, userId);
+    return this.screenService.getOne(screenId);
   }
 
   @ApiOperation({ summary: 'Update screen by id' })
@@ -70,14 +72,18 @@ export class ScreenController {
   @ApiResponse({ status: 204, description: 'Successfully updated' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Screen not found' })
+  @UseGuards(
+    OwnerGuard(ScreenRepository, 'id'),
+    EventBodyOwnerGuard,
+    PlaylistBodyOwnerGuard,
+  )
   @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updateScreen(
     @Param('id', ParseIntPipe) screenId: number,
     @Body() screenDto: ScreenDto,
     @User('sub') userId: string,
-  ): Promise<void> {
-    await this.screenService.update(screenId, screenDto, userId);
+  ): Promise<ScreenEntity> {
+    return this.screenService.update(screenId, screenDto, userId);
   }
 
   @ApiOperation({ summary: 'Delete screen by id' })
@@ -85,6 +91,7 @@ export class ScreenController {
   @ApiResponse({ status: 204, description: 'Successfully deleted' })
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Screen not found' })
+  @UseGuards(OwnerGuard(ScreenRepository, 'id'))
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteScreen(
