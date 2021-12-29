@@ -1,8 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CONTENT_PROPERTY_NOT_FOUND } from '../../common/constants/error.constants';
+import { Injectable } from '@nestjs/common';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
-import { ContentRepository } from '../content/content.repository';
-import { ContentService } from '../content/content.service';
 import { ContentPropertyRepository } from './contnet-property.repository';
 import { ContentPropertyDto } from './dtos/content-property.dto';
 import { ContentPropertyEntity } from './entities/content-property.entity';
@@ -11,8 +8,6 @@ import { ContentPropertyEntity } from './entities/content-property.entity';
 export class ContentPropertyService {
   constructor(
     private readonly contentPropertyRepository: ContentPropertyRepository,
-    private readonly contentService: ContentService,
-    private readonly contentRepository: ContentRepository,
   ) {}
 
   async create(
@@ -43,10 +38,11 @@ export class ContentPropertyService {
     { property, value }: ContentPropertyDto,
     contentVariantId: number,
   ): Promise<ContentPropertyEntity> {
-    const contentProperty = await this.contentPropertyRepository.findOneOrException({
-      contentVariantId,
-      id: contentPropertyId,
-    });
+    const contentProperty =
+      await this.contentPropertyRepository.findOneOrException({
+        id: contentPropertyId,
+        contentVariantId,
+      });
 
     Object.assign(contentProperty, {
       property,
@@ -61,12 +57,11 @@ export class ContentPropertyService {
     contentPropertyId: number,
     contentVariantId: number,
   ): Promise<void> {
-    const contentProperty = await this.contentPropertyRepository.findOneOrException(
-      contentPropertyId,
-    );
-
-    if (contentProperty.contentVariantId !== contentVariantId)
-      throw new NotFoundException(CONTENT_PROPERTY_NOT_FOUND);
+    const contentProperty =
+      await this.contentPropertyRepository.findOneOrException({
+        id: contentPropertyId,
+        contentVariantId,
+      });
 
     await this.contentPropertyRepository.remove(contentProperty);
   }
