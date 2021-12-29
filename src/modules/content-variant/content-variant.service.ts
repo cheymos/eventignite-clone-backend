@@ -1,7 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CONTENT_VARIANT_NOT_FOUND } from '../../common/constants/error.constants';
+import { Injectable } from '@nestjs/common';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
-import { ContentRepository } from '../content/content.repository';
 import { FileService } from '../file/file.service';
 import { ContentVariantRepository } from './content-variant.repository';
 import { ContentVariantEntity } from './entities/content-variant.entity';
@@ -10,7 +8,6 @@ import { ContentVariantEntity } from './entities/content-variant.entity';
 export class ContentVariantService {
   constructor(
     private readonly contentVariantRepository: ContentVariantRepository,
-    private readonly contentRepository: ContentRepository,
     private readonly fileService: FileService,
   ) {}
 
@@ -29,14 +26,11 @@ export class ContentVariantService {
     contentVariantId: number,
     contentId: number,
   ): Promise<ContentVariantEntity> {
-    const content = await this.contentRepository.findOneOrException(contentId);
-
-    const contentVariant = await this.contentVariantRepository.findOneOrException(
-      contentVariantId,
-    );
-
-    if (contentVariant.contentId !== content.id)
-      throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
+    const contentVariant =
+      await this.contentVariantRepository.findOneOrException({
+        id: contentVariantId,
+        contentId,
+      });
 
     return contentVariant;
   }
@@ -56,34 +50,26 @@ export class ContentVariantService {
     dataBuffer: Buffer,
     contentVariantId: number,
     contentId: number,
-  ): Promise<void> {
-    const content = await this.contentRepository.findOneOrException(contentId);
-
-    const contentVariant = await this.contentVariantRepository.findOneOrException(
-      contentVariantId,
-    );
-
-    if (contentVariant.contentId !== content.id)
-      throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
+  ): Promise<ContentVariantEntity> {
+    const contentVariant =
+      await this.contentVariantRepository.findOneOrException({
+        id: contentVariantId,
+        contentId,
+      });
 
     const file = await this.fileService.upload(dataBuffer, filename);
-    const newContentVariant = new ContentVariantEntity(file, contentId);
 
-    await this.contentVariantRepository.update(
-      { id: contentVariantId },
-      newContentVariant,
-    );
+    Object.assign(contentVariant, { file, contentId });
+
+    return this.contentVariantRepository.save(contentVariant);
   }
 
   async delete(contentVariantId: number, contentId: number): Promise<void> {
-    const content = await this.contentRepository.findOneOrException(contentId);
-
-    const contentVariant = await this.contentVariantRepository.findOneOrException(
-      contentVariantId,
-    );
-
-    if (contentVariant.contentId !== content.id)
-      throw new NotFoundException(CONTENT_VARIANT_NOT_FOUND);
+    const contentVariant =
+      await this.contentVariantRepository.findOneOrException({
+        id: contentVariantId,
+        contentId,
+      });
 
     await this.contentVariantRepository.remove(contentVariant);
   }

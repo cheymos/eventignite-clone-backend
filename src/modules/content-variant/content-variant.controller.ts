@@ -25,7 +25,6 @@ import {
 import { FILE_NOT_ATTACHED } from '../../common/constants/error.constants';
 import { OwnerGuard } from '../../common/guards/owner.guard';
 import { ValueExistsPipe } from '../../common/pipes/value-exists.pipe';
-import { CreatedResponse } from '../../common/types/created-response.type';
 import { PaginateResponse } from '../../common/types/paginate-response.type';
 import { getPaginateResponseOptions } from '../../utils/get-paginate-response-options.util';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -43,7 +42,7 @@ export class ContentVariantController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
-    type: CreatedResponse,
+    type: ContentVariantEntity,
     description: 'Successfully created',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -65,14 +64,8 @@ export class ContentVariantController {
     @UploadedFile(new ValueExistsPipe(FILE_NOT_ATTACHED))
     { filename, buffer }: Express.Multer.File,
     @Param('contentId', ParseIntPipe) contentId: number,
-  ): Promise<CreatedResponse> {
-    const { id } = await this.contentVariantService.create(
-      filename,
-      buffer,
-      contentId,
-    );
-
-    return { id };
+  ): Promise<ContentVariantEntity> {
+    return this.contentVariantService.create(filename, buffer, contentId);
   }
 
   @ApiOperation({ summary: 'Get content variant by id' })
@@ -111,13 +104,12 @@ export class ContentVariantController {
   @ApiResponse({ status: 404, description: 'Content variant not found' })
   @UseInterceptors(FileInterceptor('file'))
   @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updateContentVariant(
     @UploadedFile() { filename, buffer }: Express.Multer.File,
     @Param('id', ParseIntPipe) contentVariantId: number,
     @Param('contentId', ParseIntPipe) contentId: number,
-  ): Promise<void> {
-    await this.contentVariantService.update(
+  ): Promise<ContentVariantEntity> {
+    return this.contentVariantService.update(
       filename,
       buffer,
       contentVariantId,
