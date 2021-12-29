@@ -1,53 +1,26 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { PLAYLIST_CONTENT_NOT_FOUND } from '../../../common/constants/error.constants';
+import { Injectable } from '@nestjs/common';
 import { PaginateResponse } from '../../../common/types/paginate-response.type';
-import { ContentRepository } from '../../content/content.repository';
-import { ContentService } from '../../content/content.service';
 import { PlaylistContentDto } from '../dtos/playlist-content.dto';
 import { PlaylistContentEntity } from '../entities/playlist-content.entity';
-import { PlaylistRepository } from '../repositories/playlist.repository';
-import { PlaylistService } from './playlist.service';
+import { PlaylistContentRepository } from '../repositories/playlist-content.repository';
 
 @Injectable()
 export class PlaylistContentService {
   constructor(
-    @InjectRepository(PlaylistContentEntity)
-    private readonly playlistContentRepository: Repository<PlaylistContentEntity>,
-    private readonly contentService: ContentService,
-    private readonly contentRepositoy: ContentRepository,
-    private readonly playlistService: PlaylistService,
-    private readonly playlistRepository: PlaylistRepository,
+    private readonly playlistContentRepository: PlaylistContentRepository,
   ) {}
 
   async addContentToPlaylist(
     { contentId, duration, pos }: PlaylistContentDto,
     playlistId: number,
-    userId: string,
-  ): Promise<number> {
-    try {
-      const content = await this.contentRepositoy.findOneOrException(contentId);
-      this.contentService.checkAccess(content, userId);
-
-      const newPlaylistContent = new PlaylistContentEntity(
-        playlistId,
-        contentId,
-        pos,
-        duration,
-      );
-      const { id } = await this.playlistContentRepository.save(
-        newPlaylistContent,
-      );
-
-      return id;
-    } catch (err: any) {
-      throw new UnprocessableEntityException(err.message);
-    }
+  ): Promise<PlaylistContentEntity> {
+    const newPlaylistContent = new PlaylistContentEntity(
+      playlistId,
+      contentId,
+      pos,
+      duration,
+    );
+    return await this.playlistContentRepository.save(newPlaylistContent);
   }
 
   async getPlaylistWithAllContents(
@@ -67,14 +40,11 @@ export class PlaylistContentService {
     { contentId, pos, duration }: PlaylistContentDto,
     playlistId: number,
     playlistContentId: number,
-  ): Promise<void> {
-    // TODO: simplify
-    const playlistContent = await this.playlistContentRepository.findOne(
-      playlistContentId,
-    );
-
-    if (!playlistContent)
-      throw new NotFoundException(PLAYLIST_CONTENT_NOT_FOUND);
+  ): Promise<PlaylistContentEntity> {
+    const playlistContent =
+      await this.playlistContentRepository.findOneOrException(
+        playlistContentId,
+      );
 
     const newPlaylistContent = new PlaylistContentEntity(
       playlistId,
@@ -83,20 +53,17 @@ export class PlaylistContentService {
       duration,
     );
 
-    await this.playlistContentRepository.update(
-      { id: playlistContent.id },
-      newPlaylistContent,
-    );
+    Object.assign(playlistContent, newPlaylistContent);
+
+    return this.playlistContentRepository.save(playlistContent);
   }
 
-  async deleteContentFromPlaylist(
-    playlistContentId: number,
-  ): Promise<void> {
-    const deleteResult = await this.playlistContentRepository.delete(
-      playlistContentId,
-    );
+  async deleteContentFromPlaylist(playlistContentId: number): Promise<void> {
+    const playlistContent =
+      await this.playlistContentRepository.findOneOrException(
+        playlistContentId,
+      );
 
-    if (deleteResult?.affected === 0)
-      throw new NotFoundException(PLAYLIST_CONTENT_NOT_FOUND);
+    await this.playlistContentRepository.delete(playlistContent);
   }
 }

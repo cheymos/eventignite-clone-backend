@@ -18,12 +18,11 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
-import { User } from '../../../common/decorators/user.decorator';
 import { OwnerGuard } from '../../../common/guards/owner.guard';
-import { CreatedResponse } from '../../../common/types/created-response.type';
 import { PaginateResponse } from '../../../common/types/paginate-response.type';
 import { getPaginateResponseOptions } from '../../../utils/get-paginate-response-options.util';
 import { AuthGuard } from '../../auth/guards/auth.guard';
+import { ContentBodyOwnerGuard } from '../../content/guards/content-body-owner.guard';
 import { PlaylistContentDto } from '../dtos/playlist-content.dto';
 import { PlaylistContentEntity } from '../entities/playlist-content.entity';
 import { PlaylistRepository } from '../repositories/playlist.repository';
@@ -41,23 +40,20 @@ export class PlaylistContentController {
   @ApiBearerAuth()
   @ApiResponse({
     status: 201,
-    type: CreatedResponse,
+    type: PlaylistContentEntity,
     description: 'Successfully added',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @UseGuards(ContentBodyOwnerGuard)
   @Post()
   async addContentToPlaylist(
     @Body() playlistContentDto: PlaylistContentDto,
     @Param('playlistId', ParseIntPipe) playlistId: number,
-    @User('sub') userId: string,
-  ): Promise<CreatedResponse> {
-    const id = await this.playlistContentService.addContentToPlaylist(
+  ): Promise<PlaylistContentEntity> {
+    return this.playlistContentService.addContentToPlaylist(
       playlistContentDto,
       playlistId,
-      userId,
     );
-
-    return { id };
   }
 
   @ApiOperation({ summary: 'Get playlist with all contents' })
@@ -82,13 +78,12 @@ export class PlaylistContentController {
   @ApiResponse({ status: 403, description: 'Access denied' })
   @ApiResponse({ status: 404, description: 'Playlist not found' })
   @Put(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
   async updatePlaylistContentRelationship(
     @Body() playlistContentDto: PlaylistContentDto,
     @Param('playlistId', ParseIntPipe) playlistId: number,
     @Param('id', ParseIntPipe) playlistContentId: number,
-  ): Promise<void> {
-    await this.playlistContentService.updateFullRelationship(
+  ): Promise<PlaylistContentEntity> {
+    return this.playlistContentService.updateFullRelationship(
       playlistContentDto,
       playlistId,
       playlistContentId,
