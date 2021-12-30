@@ -1,6 +1,6 @@
 # 🔥 EventIgnite clone: backend
 
-[See database structure.](https://dbdiagram.io/d/61963e3302cf5d186b5cd49f)
+[See database structure of the **SECOND!** part.](https://dbdiagram.io/d/61963e3302cf5d186b5cd49f)
 
 ## Installation
 
