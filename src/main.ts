@@ -9,6 +9,8 @@ import { swaggerConfig, swaggerModuleOptions } from './configs/swagger.config';
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create(AppModule);
+  const PORT = process.env.PORT ?? 3000;
+
   app.use(cookieParser());
   app.useGlobalPipes(new MainValidationPipe());
 
@@ -17,6 +19,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document, swaggerModuleOptions);
 
-  await app.listen(3000);
+  await app.listen(PORT);
 }
 bootstrap();
