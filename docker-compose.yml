@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  # nest app
+  api:
+    container_name: api
+    build:
+      context: .
+      target: build
+    volumes:
+      - ./:/home/app
+      - /home/app/node_modules
+    ports:
+      - ${PORT}:${PORT}
+      - 9229:9229
+    command: yarn start:dev
+    env_file:
+      - ./.env
+    networks:
+      - basenet
+    depends_on:
+      - postgres
+
+  # database
+  postgres:
+    container_name: postgres
+    image: postgres:alpine
+    networks:
+      - basenet
+    environment:
+      POSTGRES_DB: ${TYPEORM_DATABASE}
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
+      PG_DATA: /var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+
+networks:
+  basenet:
